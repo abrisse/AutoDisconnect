@@ -76,7 +76,7 @@ void MainWindow::on_btnSave_clicked()
   Utils::SetBoolean("param_bluetooth_enable", ui->chkBluetooth->checkState());
   Utils::SetInteger("param_bluetooth_interval", ui->spinIntervalBluetooth->value());
 
-  Utils::displayNotification(this, "Settings have been saved and will be taken in account at the next connection !");
+  Utils::displayNotification(this, "Settings have been saved and will be taken in account at the next reconnection!");
 }
 
 void MainWindow::loadValues()

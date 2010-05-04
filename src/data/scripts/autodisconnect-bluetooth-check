@@ -3,7 +3,7 @@
 #
 # App : AutoDisconnect
 # Url : https://garage.maemo.org/projects/autodisconnect/
-# Version: 0.3
+# Version: 0.3.1
 # Author: Aymeric Brisse <aymeric.brisse@gmail.com>
 # License: GNU General Public License
 #
@@ -99,17 +99,26 @@ disconnect()
 }
 
 # ---------------------------------------------------------------------------
-uninstall_quit()
+readbluetooth()
 # ---------------------------------------------------------------------------
-# Exit if uninstalled
+# Check Bluetooth Status
 #
 # No args
 {
-    dbus-send --system --type=method_call \
-        --dest=org.bluez $(dbus-send --system --print-reply \
-        --dest=org.bluez / org.bluez.Manager.ListAdapters | \
-        awk -F'"' '/at/ {print $2}') org.bluez.Adapter.SetProperty \
-        string:Powered variant:boolean:false
+	bluetooth_status_old=$bluetooth_status
+	bluetooth_connected_old=$bluetooth_connected
+	
+    if [[ -n "`hciconfig | grep RUNNING`" ]]; then
+		bluetooth_status=true
+		if [[ "`hcitool con | wc -l`" -gt 1 ]]; then
+			bluetooth_connected=true
+		else
+			bluetooth_connected=false
+		fi
+	else
+		bluetooth_status=false
+		bluetooth_connected=false
+	fi	
 }
 
 
@@ -119,13 +128,10 @@ main()
 # Main entry point
 #
 {
-    # Read parameters
-    readparameters
-
-    # Init -> Kill other instances & dbus & log & sleep
+    # Init -> dbus & log
     init
 	
-	g_checked_bluetooth=$g_check_bluetooth
+	readbluetooth
 	
 	#PERFORM MAIN MONITORING LOOPS
 	while true
@@ -133,25 +139,16 @@ main()
 		sleep $g_samplerate
 
         readparameters
-
-        if [[ "`hcitool con | wc -l`" -gt 1 ]]; then
-	        is_connected=true
-        else
-            is_connected=false
-        fi
+		readbluetooth
 
         # Check the traffic volume
-		if [[ "$g_checked_bluetooth" = true -a "$g_check_bluetooth" = true -a "$is_connected" = false ]]; then
-			if [[ -n "`hciconfig | grep RUNNING`" ]]; then
-				disconnect
-				osnotify "Bluetooth has been disabled due to inactivity"
-				logentry "Disabled (inactivity)"
-			else
-				logentry "Status: $is_connected"
-			fi
+		if [[ "$g_check_bluetooth" = true -a "$bluetooth_status" = true -a "$bluetooth_status_old" = true -a "$bluetooth_connected" = false -a "$bluetooth_connected_old" = false  ]]; then
+			disconnect
+			bluetooth_status=false
+			osnotify "AutoDisconnected has disabled the inactive Bluetooth"
+			logentry "bluetooth closed (inactive)"
 		else			
-			logentry "Status: $is_connected"
-			$g_checked_bluetooth=$g_check_bluetooth
+			logentry "bluetooth checked"
 		fi
 
 	done
@@ -167,5 +164,4 @@ main()
 main
 
 exit 0
-
 

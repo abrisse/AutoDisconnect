@@ -1,3 +1,9 @@
+autodisconnect (0.3.1) unstable; urgency=low
+
+  * Enhancement : Bluetooth settings changes are now taken in account at the next check
+
+ -- Aymeric Brisse <aymeric.brisse@gmail.com>  Mon,  3 May 2010 14:49:18 +0200
+
 autodisconnect (0.3) unstable; urgency=low
 
   * New feature [#5260] : Add option "Disable when plugged in" - Reporter : phedders
