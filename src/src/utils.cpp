@@ -10,6 +10,29 @@ Utils::Utils()
 {
 }
 
+void Utils::displayNotification(const char* value)
+{
+    NotifyNotification *notification;
+
+    const char name[] = "AutoDisconnect";
+
+    /* Init libnotify library */
+    notify_init(name);
+
+    /* Create notification */
+    notification = notify_notification_new(name, value, NULL, NULL);
+    if (notification)
+    {
+        notify_notification_set_timeout(notification, 2000);
+        if (!notify_notification_show(notification, NULL))
+            g_warning("Failed to send notification");
+
+        g_object_unref(notification);
+    }
+    else
+        g_warning("Failed to create notification");
+}
+
 /**
  * Store an integer key
  */

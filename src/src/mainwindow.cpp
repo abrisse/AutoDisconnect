@@ -4,10 +4,9 @@
 @license: GNU General Public License
 */
 
+#include "utils.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
-#include "utils.h"
 
 #include <string.h>
 
@@ -46,7 +45,7 @@ void MainWindow::on_btnSave_clicked()
   Utils::SetBoolean("param_connection_wlan", ui->chkConnexionWLAN->checkState());
   Utils::SetBoolean("param_connection_gprs", ui->chkConnexionGPRS->checkState());
 
-  ui->btnSave->setText("Saved !");
+  Utils::displayNotification("Settings has been saved !");
 }
 
 void MainWindow::loadValues()

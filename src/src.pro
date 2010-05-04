@@ -22,7 +22,8 @@ VPATH += src \
 CONFIG -= 
 CONFIG += debug \
     link_pkgconfig
-PKGCONFIG += gconf-2.0
+PKGCONFIG += gconf-2.0 \
+    libnotify
 QT = core \
     gui
 	

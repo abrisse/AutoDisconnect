@@ -1,3 +1,11 @@
+autodisconnect (0.2.1) unstable; urgency=low
+
+  * Fix [#5236] : Disconnection always happens when interface is up since more than 10MB
+
+  * Minor enhancement : display notification when settings are saved.
+
+ -- Aymeric Brisse <aymeric.brisse@gmail.com>  Mon, 22 Feb 2010 16:04:16 +0100
+
 autodisconnect (0.2) unstable; urgency=low
 
   * Fix [#5214] : Connection delay - Reporter : amorek13 - Many thanks to mclarson for solving the problem

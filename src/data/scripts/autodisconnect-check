@@ -3,7 +3,7 @@
 #
 # App : AutoDisconnect
 # Url : https://garage.maemo.org/projects/autodisconnect/
-# Version: 0.2
+# Version: 0.2.1
 # Author: Aymeric Brisse <aymeric.brisse@gmail.com>
 # License: GNU General Public License
 #
@@ -45,6 +45,9 @@ readparameters()
 init()
 # ---------------------------------------------------------------------------
 {
+    # Log monitor startup to file
+    logentry "[Start]"
+
     # Kill every instances already running
 
     TmpFile=/tmp/$(basename $0).tmp
@@ -143,9 +146,6 @@ main()
 # Main entry point
 #
 {
-    # Log monitor startup to file
-    logentry "[Start]"
-
     # Read parameters
     readparameters
 
@@ -164,7 +164,7 @@ main()
     # Quit if this interface doesn't have to be checked
     disable_quit
 	
-	packets_before=`grep $interface /proc/net/dev | awk '{ print $2 }'`
+	packets_before=`grep $interface /proc/net/dev | awk -F":" '{print $2}' | awk '{print $1}'`
 	
 	#PERFORM MAIN MONITORING LOOPS
 	while true
@@ -180,7 +180,7 @@ main()
             break
         }
 
-		packets_after=`grep $interface /proc/net/dev | awk '{ print $2 }'`
+		packets_after=`grep $interface /proc/net/dev | awk -F":" '{print $2}' | awk '{print $1}'`
 
 		if [ "$packets_after" -lt "$((packets_before+g_dontcountbytes))" ]; then
 			disconnect

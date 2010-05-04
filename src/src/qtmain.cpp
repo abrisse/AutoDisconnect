@@ -6,7 +6,6 @@
 
 #include <QtGui/QApplication>
 #include "mainwindow.h"
-#include "utils.h"
 
 #include <stdlib.h>
 #include <stdio.h>
