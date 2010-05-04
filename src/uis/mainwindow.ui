@@ -178,7 +178,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Max Idle Trafic :</string>
+     <string>Max Idle Traffic :</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="spinMinBytes">
@@ -306,7 +306,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>- Interval (min) - Max Idle Trafic (Bytes/min)</string>
+     <string>- Interval (min) - Max Idle Traffic (Bytes/min)</string>
     </property>
    </widget>
   </widget>

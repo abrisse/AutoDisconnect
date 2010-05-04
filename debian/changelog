@@ -1,3 +1,10 @@
+autodisconnect (0.2.2) unstable; urgency=low
+
+  * Fix : Max Idle Traffic was a value per second instead of minute
+  * Minor Fix : UI Interface - Spelling Traffic instead of Trafic (french)
+
+ -- Aymeric Brisse <aymeric.brisse@gmail.com>  Mon, 22 Feb 2010 18:13:55 +0100
+
 autodisconnect (0.2.1) unstable; urgency=low
 
   * Fix [#5236] : Disconnection always happens when interface is up since more than 10MB

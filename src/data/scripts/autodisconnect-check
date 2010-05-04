@@ -3,7 +3,7 @@
 #
 # App : AutoDisconnect
 # Url : https://garage.maemo.org/projects/autodisconnect/
-# Version: 0.2.1
+# Version: 0.2.2
 # Author: Aymeric Brisse <aymeric.brisse@gmail.com>
 # License: GNU General Public License
 #
@@ -16,9 +16,8 @@
 readparameters()
 # ---------------------------------------------------------------------------
 {
-    # How often to test for inactivity
+    # How often to test for inactivity (min)
     g_samplerate="`gconftool-2 -g /apps/autodisconnect/param_interval`"
-    g_samplerate=$((g_samplerate*60))
 
     # Enable logging
     g_logging="true"
@@ -39,6 +38,9 @@ readparameters()
 
     # Number of bytes to ignore for each time period
     g_dontcountbytes=$((g_dontcountbytespermin*g_samplerate))
+
+    # Convert min interval to sec interval
+    g_samplerate=$((g_samplerate*60))
 }
 
 # ---------------------------------------------------------------------------
