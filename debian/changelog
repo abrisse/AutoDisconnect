@@ -1,3 +1,16 @@
+autodisconnect (0.3) unstable; urgency=low
+
+  * New feature [#5260] : Add option "Disable when plugged in" - Reporter : phedders
+  * New feature [#5662] : Add option "Disable Bluetooth if no device is connected" - Reporter : DaSilva
+  * New feature [#5233] : Add option "Do not disconnect if ssh connections are active" - Reporter : fred123
+  * New feature [#5659] : Limit can now be set in B/KB/MB
+
+  * Fix : New Installer (AutoDisconnect didn't work  anymore when reinstalled)
+
+  * Enhancement : UI has been reorganized an now uses tabs
+
+ -- Aymeric Brisse <aymeric.brisse@gmail.com>  Sat,  1 May 2010 22:43:04 +0200
+
 autodisconnect (0.2.2) unstable; urgency=low
 
   * Fix : Max Idle Traffic was a value per second instead of minute

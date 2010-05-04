@@ -1,5 +1,5 @@
 /*
-@version: 0.2
+@version: 0.3
 @author: Aymeric Brisse <aymeric.brisse@gmail.com>
 @license: GNU General Public License
 */
@@ -7,14 +7,15 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <stdio.h>
+
 /* Include the prototypes for GConf client functions */
 #include <gconf/gconf-client.h>
-
-/* Include the prototypes for Libnotify */
-/* See http://library.gnome.org/devel/libnotify/ */
-#include <libnotify/notify.h>
-
 #include <stdio.h>
+
+/* Banner - See http://doc.qt.nokia.com/qt-maemo-4.6/qmaemo5informationbox.html */
+#include <QMaemo5InformationBox>
+#include <QMainWindow>
 
 /* The application name -part of the GConf namespace */
 #define APP_NAME "autodisconnect"
@@ -25,7 +26,7 @@ class Utils
 {
 public:
     Utils();
-    static void displayNotification(const char* value);
+    static void displayNotification(QMainWindow* window, const char* value);
 
     static void SetInteger(const char* key, int value);
     static int GetInteger(const char* key);

@@ -1,5 +1,5 @@
 /*
-@version: 0.2
+@version: 0.3
 @author: Aymeric Brisse <aymeric.brisse@gmail.com>
 @license: GNU General Public License
 */
@@ -10,27 +10,11 @@ Utils::Utils()
 {
 }
 
-void Utils::displayNotification(const char* value)
+void Utils::displayNotification(QMainWindow* window, const char* value)
 {
-    NotifyNotification *notification;
-
-    const char name[] = "AutoDisconnect";
-
-    /* Init libnotify library */
-    notify_init(name);
-
-    /* Create notification */
-    notification = notify_notification_new(name, value, NULL, NULL);
-    if (notification)
-    {
-        notify_notification_set_timeout(notification, 2000);
-        if (!notify_notification_show(notification, NULL))
-            g_warning("Failed to send notification");
-
-        g_object_unref(notification);
-    }
-    else
-        g_warning("Failed to create notification");
+  char buffer[500];
+  sprintf(buffer,"%s%s%s","<font color='#000000'>",value, "</font>");
+  QMaemo5InformationBox::information(window, buffer, QMaemo5InformationBox::DefaultTimeout);
 }
 
 /**

@@ -1,5 +1,5 @@
 /*
-@version: 0.2
+@version: 0.3
 @author: Aymeric Brisse <aymeric.brisse@gmail.com>
 @license: GNU General Public License
 */

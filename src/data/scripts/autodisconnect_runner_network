@@ -3,12 +3,12 @@
 #
 # App : AutoDisconnect
 # Url : https://garage.maemo.org/projects/autodisconnect/
-# Version: 0.2
+# Version: 0.3
 # Author: Aymeric Brisse <aymeric.brisse@gmail.com>
 # License: GNU General Public License
 #
 
-AUTODISCONNECT=/opt/autodisconnect/autodisconnect-check
+AUTODISCONNECT=/opt/autodisconnect/autodisconnect-network-check
 
 if [ ! -x $AUTODISCONNECT ]; then
   exit 0

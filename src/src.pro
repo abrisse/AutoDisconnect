@@ -22,10 +22,10 @@ VPATH += src \
 CONFIG -= 
 CONFIG += debug \
     link_pkgconfig
-PKGCONFIG += gconf-2.0 \
-    libnotify
+PKGCONFIG += gconf-2.0
 QT = core \
-    gui
+    gui \
+    maemo5
 	
 PREFIX = /../../debian/autodisconnect/
 	
@@ -43,9 +43,15 @@ icon64.files = data/64x64/autodisconnect.png
 INSTALLS += icon48
 icon48.path = $$PREFIX/usr/share/icons/hicolor/48x48/apps
 icon48.files = data/48x48/autodisconnect.png
-INSTALLS += autodisconnect-up
-autodisconnect-up.path = $$PREFIX/etc/network/if-up.d/
-autodisconnect-up.files = data/scripts/if-up.d/99_autodisconnect
-INSTALLS += autodisconnect-check
-autodisconnect-check.path = $$PREFIX/opt/autodisconnect
-autodisconnect-check.files = data/scripts/autodisconnect-check
+INSTALLS += autodisconnect-network-runner
+autodisconnect-network-runner.path = $$PREFIX/opt/autodisconnect
+autodisconnect-network-runner.files = data/scripts/autodisconnect_runner_network
+INSTALLS += autodisconnect-network-check
+autodisconnect-network-check.path = $$PREFIX/opt/autodisconnect
+autodisconnect-network-check.files = data/scripts/autodisconnect-network-check
+INSTALLS += autodisconnect-bluetooth-runner
+autodisconnect-bluetooth-runner.path = $$PREFIX/opt/autodisconnect
+autodisconnect-bluetooth-runner.files = data/scripts/autodisconnect_runner_bluetooth
+INSTALLS += autodisconnect-network-bluetooth
+autodisconnect-network-bluetooth.path = $$PREFIX/opt/autodisconnect
+autodisconnect-network-bluetooth.files = data/scripts/autodisconnect-bluetooth-check

@@ -17,19 +17,31 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-
 case "$1" in
     configure)
-		echo "Recreating gconf keys ..."
-		gconftool-2 -s /apps/autodisconnect/param_interval --type int 5
-		gconftool-2 -s /apps/autodisconnect/param_min_bytes --type int 512
-		gconftool-2 -s /apps/autodisconnect/param_enabled --type bool false
-		gconftool-2 -s /apps/autodisconnect/param_notifications --type bool false
-		gconftool-2 -s /apps/autodisconnect/param_connection_wlan --type bool true
-		gconftool-2 -s /apps/autodisconnect/param_connection_wlan --type bool true
-		gconftool-2 -s /apps/autodisconnect/param_connection_gprs --type bool true
-        echo "Removing unused scripts ..."
-        [[ -x /etc/network/if-down.d/99_autodisconnect ]] && rm -f /etc/network/if-down.d/99_autodisconnect
+		echo "Updating configuration ..."
+        [[ -z `gconftool-2 --get /apps/autodisconnect/param_interval` ]] && gconftool-2 -s /apps/autodisconnect/param_interval --type int 5
+        [[ -z `gconftool-2 --get /apps/autodisconnect/param_min_bytes` ]] && gconftool-2 -s /apps/autodisconnect/param_min_bytes --type int 2048
+        [[ -z `gconftool-2 --get /apps/autodisconnect/param_notifications` ]] && gconftool-2 -s /apps/autodisconnect/param_notifications --type bool false
+        [[ -z `gconftool-2 --get /apps/autodisconnect/param_exception_ssh` ]] && gconftool-2 -s /apps/autodisconnect/param_exception_ssh --type bool false
+        [[ -z `gconftool-2 --get /apps/autodisconnect/param_connection_wlan` ]] && gconftool-2 -s /apps/autodisconnect/param_connection_wlan --type bool true
+        [[ -z `gconftool-2 --get /apps/autodisconnect/param_connection_gprs` ]] && gconftool-2 -s /apps/autodisconnect/param_connection_gprs --type bool true
+        [[ -z `gconftool-2 --get /apps/autodisconnect/param_bluetooth_enable` ]] && gconftool-2 -s /apps/autodisconnect/param_bluetooth_enable --type bool false
+        [[ -z `gconftool-2 --get /apps/autodisconnect/param_bluetooth_interval` ]] && gconftool-2 -s /apps/autodisconnect/param_bluetooth_interval --type int 10
+        [[ -n `gconftool-2 --get /apps/autodisconnect/param_enabled` ]] && {
+            [[ `gconftool-2 --get /apps/autodisconnect/param_enabled` = false ]] && gconftool-2 -s /apps/autodisconnect/param_running_options --type int 0
+            [[ `gconftool-2 --get /apps/autodisconnect/param_enabled` = true ]] && gconftool-2 -s /apps/autodisconnect/param_running_options --type int 1
+            gconftool-2 --unset /apps/autodisconnect/param_enabled
+        }
+        [[ -z `gconftool-2 --get /apps/autodisconnect/param_running_options` ]] && gconftool-2 -s /apps/autodisconnect/param_running_options --type int 1
+
+        echo "Installing network triggers ..."
+        [[ -e /etc/network/if-up.d/99_autodisconnect ]] && rm -f /etc/network/if-up.d/99_autodisconnect # AutoDisconnect v.0.2
+        [[ -e /etc/network/if-down.d/99_autodisconnect ]] && rm -f /etc/network/if-down.d/99_autodisconnect # AutoDisconnect v.0.1
+        cp /opt/autodisconnect/autodisconnect_runner_network /etc/network/if-up.d/99_autodisconnect_network
+        cp /opt/autodisconnect/autodisconnect_runner_bluetooth /etc/event.d/autodisconnect
+        
+        initctl start autodisconnect &
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

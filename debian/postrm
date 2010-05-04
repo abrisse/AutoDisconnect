@@ -21,17 +21,18 @@ set -e
 
 case "$1" in
     purge)
-        echo "Removing gconf keys ..."
+        echo "Removing configuration ..."
         gconftool-2 --recursive-unset /apps/autodisconnect
+        [[ -e /var/log/autodisconnect.log ]] && rm -f /var/log/autodisconnect.log
     ;;
 
-    remove|abort-install)
-        echo "Removing unused scripts ..."
-        [[ -x /etc/network/if-down.d/99_autodisconnect ]] && rm -f /etc/network/if-down.d/99_autodisconnect
-        [[ -x /etc/network/if-up.d/99_autodisconnect ]] && rm -f /etc/network/if-up.d/99_autodisconnect
-    ;;
-
-    upgrade|failed-upgrade|abort-upgrade|disappear)
+    remove|abort-install|upgrade|failed-upgrade|abort-upgrade|disappear)
+        echo "Removing network triggers ..."
+        [[ -e /etc/network/if-up.d/99_autodisconnect_network ]] && rm -f /etc/network/if-up.d/99_autodisconnect_network
+        [[ -e /etc/event.d/autodisconnect ]] && {
+            initctl stop autodisconnect
+            rm -f /etc/event.d/autodisconnect
+        }     
     ;;
 
     *)
