@@ -1,0 +1,25 @@
+#ifndef UTILS_H
+#define UTILS_H
+
+/* Include the prototypes for GConf client functions (NEW). */
+#include <gconf/gconf-client.h>
+#include <stdio.h>
+
+/* The application name -part of the GConf namespace (NEW). */
+#define APP_NAME "autodisconnect"
+/* This will be the root "directory" for our preferences (NEW). */
+#define GC_ROOT  "/apps/" APP_NAME "/"
+
+class Utils
+{
+public:
+    Utils();
+    static void SetInteger(const char* key, int value);
+    static int GetInteger(const char* key);
+    static void SetBoolean(const char* key, bool value);
+    static bool GetBoolean(const char* key);
+
+private:
+};
+
+#endif // UTILS_H

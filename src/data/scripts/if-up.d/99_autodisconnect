@@ -1,0 +1,9 @@
+#!/bin/sh
+
+AUTODISCONNECT=/opt/autodisconnect/autodisconnect-check
+
+if [ ! -x $AUTODISCONNECT ]; then
+  exit 0
+fi
+
+$AUTODISCONNECT

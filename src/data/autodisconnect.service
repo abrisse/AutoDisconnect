@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=com.nokia.autodisconnect
+Exec=/opt/autodisconnect/autodisconnect
