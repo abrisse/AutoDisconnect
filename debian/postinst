@@ -20,14 +20,16 @@ set -e
 
 case "$1" in
     configure)
-		echo "Creating gconf keys ..."
-		gconftool-2 -s /apps/autodisconnect/param_interval --type int 1
+		echo "Recreating gconf keys ..."
+		gconftool-2 -s /apps/autodisconnect/param_interval --type int 5
 		gconftool-2 -s /apps/autodisconnect/param_min_bytes --type int 512
 		gconftool-2 -s /apps/autodisconnect/param_enabled --type bool false
 		gconftool-2 -s /apps/autodisconnect/param_notifications --type bool false
 		gconftool-2 -s /apps/autodisconnect/param_connection_wlan --type bool true
 		gconftool-2 -s /apps/autodisconnect/param_connection_wlan --type bool true
 		gconftool-2 -s /apps/autodisconnect/param_connection_gprs --type bool true
+        echo "Removing unused scripts ..."
+        [[ -x /etc/network/if-down.d/99_autodisconnect ]] && rm -f /etc/network/if-down.d/99_autodisconnect
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

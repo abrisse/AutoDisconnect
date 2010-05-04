@@ -1,7 +1,9 @@
 /*
- * Created: 02/13/10-18:42:19
- * Author: Aymeric Brisse
- */
+@version: 0.2
+@author: Aymeric Brisse <aymeric.brisse@gmail.com>
+@license: GNU General Public License
+*/
+
 #include <QtGui/QApplication>
 #include "mainwindow.h"
 #include "utils.h"

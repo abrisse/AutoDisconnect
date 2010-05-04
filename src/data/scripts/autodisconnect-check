@@ -1,55 +1,64 @@
 #!/bin/sh
 
-# ---------------------------------------------------------------------------
-# PARAMETERS
-# ---------------------------------------------------------------------------
-
-# Check if AutoDisconnect is enabled
-[[ `gconftool-2 -g /apps/autodisconnect/param_enabled` = false ]] && exit 0
-
-# Waiting for possible closing connections
-sleep 10
-
-# How often to test for inactivity
-g_samplerate="`gconftool-2 -g /apps/autodisconnect/param_interval`"
-g_samplerate=$((g_samplerate*60))
-
-# Enable logging
-g_logging="true"
-
-# Notifications
-g_notifications="`gconftool-2 -g /apps/autodisconnect/param_notifications`"
-
-# Number of bytes allowed to be received without disconnect
-g_dontcountbytespermin=`gconftool-2 -g /apps/autodisconnect/param_min_bytes`
-
-# Interfaces to check
-g_enable=
-[[ `gconftool-2 -g /apps/autodisconnect/param_connection_wlan` = true ]] && g_enable="wlan "$g_enable
-[[ `gconftool-2 -g /apps/autodisconnect/param_connection_gprs` = true ]] && g_enable="gprs "$g_enable
-
-# Where to store the logfile. This is cleared when it goes over 100k.
-logfile=/var/log/autodisconnect.log
-
-# ---------------------------------------------------------------------------
-# DON'T MODIFY ANYTHING BELOW THIS POINT
-# ---------------------------------------------------------------------------
-
-# ---------------------------------------------------------------------------
-# GLOBALS
-# ---------------------------------------------------------------------------
-
-# Number of bytes to ignore for each time period
-g_dontcountbytes=$((g_dontcountbytespermin*g_samplerate))
+#
+# App : AutoDisconnect
+# Url : https://garage.maemo.org/projects/autodisconnect/
+# Version: 0.2
+# Author: Aymeric Brisse <aymeric.brisse@gmail.com>
+# License: GNU General Public License
+#
 
 # ---------------------------------------------------------------------------
 # FUNCTIONS
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
+readparameters()
+# ---------------------------------------------------------------------------
+{
+    # How often to test for inactivity
+    g_samplerate="`gconftool-2 -g /apps/autodisconnect/param_interval`"
+    g_samplerate=$((g_samplerate*60))
+
+    # Enable logging
+    g_logging="true"
+
+    # Notifications
+    g_notifications="`gconftool-2 -g /apps/autodisconnect/param_notifications`"
+
+    # Number of bytes allowed to be received without disconnect
+    g_dontcountbytespermin=`gconftool-2 -g /apps/autodisconnect/param_min_bytes`
+
+    # Interfaces to check
+    g_enable=
+    [[ `gconftool-2 -g /apps/autodisconnect/param_connection_wlan` = true ]] && g_enable="wlan "$g_enable
+    [[ `gconftool-2 -g /apps/autodisconnect/param_connection_gprs` = true ]] && g_enable="gprs "$g_enable
+
+    # Where to store the logfile. This is cleared when it goes over 100k.
+    logfile=/var/log/autodisconnect.log
+
+    # Number of bytes to ignore for each time period
+    g_dontcountbytes=$((g_dontcountbytespermin*g_samplerate))
+}
+
+# ---------------------------------------------------------------------------
 init()
 # ---------------------------------------------------------------------------
 {
+    # Kill every instances already running
+
+    TmpFile=/tmp/$(basename $0).tmp
+
+    `ps | egrep 'S[ ]*/bin/sh[ ]*/opt/autodisconnect/autodisconnect-check' | sed 's/^[ ]*\([0-9]*\) .*$/\1/g' > $TmpFile`
+
+    while read Pid
+    do
+        [[ -n "$Pid" -a "$Pid" -ne "$$" ]] && {
+            logentry "[Kill $Pid]"
+            kill -KILL $Pid
+        }
+    done < $TmpFile
+
     # Allow dbus to work
     [[ -e /tmp/dbus-info ]] && eval `cat /tmp/dbus-info`
 
@@ -62,6 +71,10 @@ init()
         size=`stat $logfile | grep Size | awk '{ print $2; }'`
         [[ "$size" -gt 50000 ]] && :>$logfile
     fi
+
+    # Waiting for possible closing connections
+    # Waiting for initial traffic to be made -> then the next check will close the connection
+    sleep 30
 }
 
 # ---------------------------------------------------------------------------
@@ -72,7 +85,7 @@ logentry()
 # Arg 1 - The text to log
 {
     [[ "$g_logging" == "true" ]] && {
-        echo -e "[`date`] $1" >> $logfile
+        echo -e "[`date`] [$$] $1" >> $logfile
     }
 }
 
@@ -108,14 +121,18 @@ disconnect()
 # ---------------------------------------------------------------------------
 disable_quit()
 # ---------------------------------------------------------------------------
+# Disable for some interfaces
+#
 {
-    # Disable for some interfaces
-	if echo "$g_enable" | grep -qs "$short_interface" 2>/dev/null; then
+    short_interface=`echo "$interface" | tr -d 0-9`
+    connection_check=`echo "$g_enable" | grep "$short_interface" 2>/dev/null`
+    
+	if [ -n "$short_interface" -a -n "$connection_check" ]; then
 		osnotify "Auto-disconnect enabled for $short_interface"
 		logentry "Auto-disconnect enabled for $short_interface"
 	else
-		#osnotify "Auto-disconnect disabled for $short_interface"
-		logentry "Auto-disconnect disabled for $short_interface"
+		logentry "Auto-disconnect disabled for ${short_interface:-other connections}"
+        logentry "[Stop]"
 		exit 0
 	fi
 }
@@ -124,39 +141,52 @@ disable_quit()
 main()
 # ---------------------------------------------------------------------------
 # Main entry point
+#
 {
+    # Log monitor startup to file
+    logentry "[Start]"
+
+    # Read parameters
+    readparameters
+
+    # Init -> Kill other instances & dbus & log & sleep
     init
 
-    # Log monitor startup to file & notify user via popup
-    logentry "Auto-disconnect starting"
+    # Get interface
     	
 	interface=$IFACE
 	
 	if [ -z "$interface" ]; then
 		# gprs0 generally
-		interface=`grep gprs /proc/net/route | tail -1 | cut -f1`
+		interface=`grep gprs0 /proc/net/route | tail -1 | cut -f1`
 	fi
-
-	short_interface=`echo "$interface" | tr -d 0-9`
 
     # Quit if this interface doesn't have to be checked
     disable_quit
 	
-	#interface=`grep -v tun /proc/net/route | tail -1 | cut -f1`
 	packets_before=`grep $interface /proc/net/dev | awk '{ print $2 }'`
 	
 	#PERFORM MAIN MONITORING LOOPS
-	while true;
+	while true
 	do
 		sleep $g_samplerate
+
+        # Check if connection is still alive
+
+        interface_check=`grep $interface /proc/net/route | tail -1 | cut -f1`
+
+        [[ -z "$interface_check" ]] && {
+            logentry "Connection $interface has been closed externally"
+            break
+        }
 
 		packets_after=`grep $interface /proc/net/dev | awk '{ print $2 }'`
 
 		if [ "$packets_after" -lt "$((packets_before+g_dontcountbytes))" ]; then
 			disconnect
 			osnotify "Connection $interface closed due to inactivity"
-			logentry "$interface closed. Bytes received : $((packets_after-packets_before))"
-			exit 0
+			logentry "Connection $interface has been closed by AutoDisconnect. Bytes received : $((packets_after-packets_before))"
+			break
 		else			
 			logentry "$interface: Bytes received : $((packets_after-packets_before))"
 			packets_before=$packets_after   
@@ -166,9 +196,14 @@ main()
 	
 }
 
-# Start
-main
+# ---------------------------------------------------------------------------
+# RUNTIME
+# ---------------------------------------------------------------------------
+
+# Start AutoDisconnect if enabled
+[[ `gconftool-2 -g /apps/autodisconnect/param_enabled` = true ]] && main
+
+logentry "[Stop]"
 
 exit 0
-
 

@@ -20,9 +20,18 @@ set -e
 
 
 case "$1" in
-    purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
-		echo "Removing gconf keys ..."
-		gconftool-2 --recursive-unset /apps/autodisconnect
+    purge)
+        echo "Removing gconf keys ..."
+        gconftool-2 --recursive-unset /apps/autodisconnect
+    ;;
+
+    remove|abort-install)
+        echo "Removing unused scripts ..."
+        [[ -x /etc/network/if-down.d/99_autodisconnect ]] && rm -f /etc/network/if-down.d/99_autodisconnect
+        [[ -x /etc/network/if-up.d/99_autodisconnect ]] && rm -f /etc/network/if-up.d/99_autodisconnect
+    ;;
+
+    upgrade|failed-upgrade|abort-upgrade|disappear)
     ;;
 
     *)

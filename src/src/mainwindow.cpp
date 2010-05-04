@@ -1,3 +1,9 @@
+/*
+@version: 0.2
+@author: Aymeric Brisse <aymeric.brisse@gmail.com>
+@license: GNU General Public License
+*/
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 

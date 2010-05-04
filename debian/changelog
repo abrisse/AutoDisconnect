@@ -1,3 +1,14 @@
+autodisconnect (0.2) unstable; urgency=low
+
+  * Fix [#5214] : Connection delay - Reporter : amorek13 - Many thanks to mclarson for solving the problem
+  * Fix [#5216] : Increase the digits visible in the input fields - Reporter : jakiman
+  * Fix [#5222] : Configure Uninstaller & Installer
+  * Fix [#5225] : Prevent 2 instances of AutoDisconnect to be run at the same time
+
+  * Enhancement : Punctual connections (~20 seconds) will be closed during the next interval check instead of the second next one.
+
+ -- Aymeric Brisse <aymeric.brisse@gmail.com>  Sat, 20 Feb 2010 17:09:00 +0100
+
 autodisconnect (0.1) unstable; urgency=low
 
   * Initial release for Maemo 5 (Nokia N900).
