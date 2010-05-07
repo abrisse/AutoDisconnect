@@ -4,26 +4,15 @@ Priority: extra
 Maintainer: Aymeric Brisse <aymeric.brisse@gmail.com>
 Build-Depends: debhelper (>= 5), libqt4-maemo5-dev, libgconf2-dev, libnotify-dev
 Standards-Version: 3.7.2
-Homepage: autodisconnect.garage.maemo.org/
+Homepage: http://github.com/abrisse/AutoDisconnect
 
 Package: autodisconnect
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Automatically disconnect the idle connections
- The package contains a GUI (Category Network) in order for you to set some parameters :
- * the connections to check (Wifi or 3G)
- * the interval between 2 checks (in minutes)
- * the max idle traffic (in bytes / minute)
- ---------------------------------------
- Exemple
- ---------------------------------------
- Max Idle Traffic = 512 Bytes
- Interval = 5 Minutes 
- -
- Every 5 minutes, if the total traffic of your connection if less than 512*5 = 2.5 KB, it won't be closed. 
- -
- Remark : In order for the settings to be applied, you have to close the current connection.
+Description: Automatically closes your idle connections (Wifi + 3G/GPRS + Bluetooth) in order for your batteries to last much longer if like me you have automatic synchronizations.
+ To manage the application, you can launch the program 'AutoDisconnect' which will be added in your application menu.
 XSBC-Bugtracker: https://garage.maemo.org/tracker/?atid=5016&group_id=1353&func=browse
+XB-Maemo-Upgrade-Description: Fixed Bluetooth feature.
 XSBC-Maemo-Display-Name: AutoDisconnect
 XB-Maemo-Icon-26:
  iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAGXRFWHRTb2Z0

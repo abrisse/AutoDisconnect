@@ -11,7 +11,7 @@
 AUTODISCONNECT=/opt/autodisconnect/autodisconnect-network-check
 
 if [ ! -x $AUTODISCONNECT ]; then
-  exit 0
+	exit 0
 fi
 
 $AUTODISCONNECT &

@@ -76,12 +76,12 @@ osnotify()
 # Arg 1 - The text to display
 {
     [[ "$g_notifications" = "true" ]] && {
-		/usr/bin/dbus-send --type=method_call \
-			--dest=org.freedesktop.Notifications \
-			/org/freedesktop/Notifications \
-			org.freedesktop.Notifications.SystemNoteInfoprint \
-			string:"$1"
-	}
+        /usr/bin/dbus-send --type=method_call \
+        --dest=org.freedesktop.Notifications \
+        /org/freedesktop/Notifications \
+        org.freedesktop.Notifications.SystemNoteInfoprint \
+        string:"$1"
+    }
 }
 
 # ---------------------------------------------------------------------------
@@ -105,20 +105,20 @@ readbluetooth()
 #
 # No args
 {
-	bluetooth_status_old=$bluetooth_status
-	bluetooth_connected_old=$bluetooth_connected
-	
+    bluetooth_status_old=$bluetooth_status
+    bluetooth_connected_old=$bluetooth_connected
+    
     if [[ -n "`hciconfig | grep RUNNING`" ]]; then
-		bluetooth_status=true
-		if [[ "`hcitool con | wc -l`" -gt 1 ]]; then
-			bluetooth_connected=true
-		else
-			bluetooth_connected=false
-		fi
-	else
-		bluetooth_status=false
-		bluetooth_connected=false
-	fi	
+        bluetooth_status=true
+        if [[ "`hcitool con | wc -l`" -gt 1 ]]; then
+            bluetooth_connected=true
+        else
+            bluetooth_connected=false
+        fi
+    else
+        bluetooth_status=false
+        bluetooth_connected=false
+    fi    
 }
 
 
@@ -130,29 +130,29 @@ main()
 {
     # Init -> dbus & log
     init
-	
-	readbluetooth
-	
-	#PERFORM MAIN MONITORING LOOPS
-	while true
-	do
-		sleep $g_samplerate
+    
+    readbluetooth
+    
+    #PERFORM MAIN MONITORING LOOPS
+    while true
+    do
+        sleep $g_samplerate
 
         readparameters
-		readbluetooth
+        readbluetooth
 
         # Check the traffic volume
-		if [[ "$g_check_bluetooth" = true -a "$bluetooth_status" = true -a "$bluetooth_status_old" = true -a "$bluetooth_connected" = false -a "$bluetooth_connected_old" = false  ]]; then
-			disconnect
-			bluetooth_status=false
-			osnotify "AutoDisconnected has disabled the inactive Bluetooth"
-			logentry "bluetooth closed (inactive)"
-		else			
-			logentry "bluetooth checked"
-		fi
+        if [[ "$g_check_bluetooth" = true -a "$bluetooth_status" = true -a "$bluetooth_status_old" = true -a "$bluetooth_connected" = false -a "$bluetooth_connected_old" = false  ]]; then
+            disconnect
+            bluetooth_status=false
+            osnotify "AutoDisconnected has disabled the inactive Bluetooth"
+            logentry "bluetooth closed (inactive)"
+        else            
+            logentry "bluetooth checked"
+        fi
 
-	done
-	
+    done
+    
 }
 
 # ---------------------------------------------------------------------------

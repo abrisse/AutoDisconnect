@@ -106,12 +106,12 @@ osnotify()
 # Arg 1 - The text to display
 {
     [[ "$g_notifications" = "true" ]] && {
-		/usr/bin/dbus-send --type=method_call \
-			--dest=org.freedesktop.Notifications \
-			/org/freedesktop/Notifications \
-			org.freedesktop.Notifications.SystemNoteInfoprint \
-			string:"$1"
-	}
+        /usr/bin/dbus-send --type=method_call \
+            --dest=org.freedesktop.Notifications \
+            /org/freedesktop/Notifications \
+            org.freedesktop.Notifications.SystemNoteInfoprint \
+            string:"$1"
+    }
 }
 
 # ---------------------------------------------------------------------------
@@ -136,14 +136,14 @@ disable_quit()
     short_interface=`echo "$interface" | tr -d 0-9`
     connection_check=`echo "$g_enable" | grep "$short_interface" 2>/dev/null`
     
-	if [[ -n "$short_interface" -a -n "$connection_check" ]]; then
-		osnotify "AutoDisconnect is now running"
-		logentry "$interface started"
-	else
-		logentry "$interface ignored"
+    if [[ -n "$short_interface" -a -n "$connection_check" ]]; then
+        osnotify "AutoDisconnect is now running"
+        logentry "$interface started"
+    else
+        logentry "$interface ignored"
         logentry "<Stop>"
-		exit 0
-	fi
+        exit 0
+    fi
 }
 
 # ---------------------------------------------------------------------------
@@ -159,23 +159,23 @@ main()
     init
 
     # Get interface
-    	
-	interface=$IFACE
-	
-	if [[ -z "$interface" ]]; then
-		# gprs0 generally
-		interface="`grep gprs0 /proc/net/route | tail -1 | cut -f1`"
-	fi
+        
+    interface=$IFACE
+    
+    if [[ -z "$interface" ]]; then
+        # gprs0 generally
+        interface="`grep gprs0 /proc/net/route | tail -1 | cut -f1`"
+    fi
 
     # Quit if this interface doesn't have to be checked
     disable_quit
-	
-	packets_before="`grep $interface /proc/net/dev | awk -F":" '{print $2}' | awk '{print $1}'`"
-	
-	#PERFORM MAIN MONITORING LOOPS
-	while true
-	do
-		sleep $g_samplerate
+    
+    packets_before="`grep $interface /proc/net/dev | awk -F":" '{print $2}' | awk '{print $1}'`"
+    
+    #PERFORM MAIN MONITORING LOOPS
+    while true
+    do
+        sleep $g_samplerate
 
         # Check if connection is still alive
 
@@ -211,20 +211,20 @@ main()
 
         # Check the traffic volume
 
-		packets_after="`grep $interface /proc/net/dev | awk -F":" '{print $2}' | awk '{print $1}'`"
+        packets_after="`grep $interface /proc/net/dev | awk -F":" '{print $2}' | awk '{print $1}'`"
 
-		if [[ "$exception_apply" = false -a "$packets_after" -lt "$((packets_before+g_dontcountbytes))" ]]; then
-			disconnect
-			osnotify "AutoDisconnect has closed the inactive connection"
-			logentry "$interface closed (inactive) +$((packets_after-packets_before))"
-			break
-		else			
-			logentry "$interface checked (+$((packets_after-packets_before)))"
-			packets_before=$packets_after   
-		fi
+        if [[ "$exception_apply" = false -a "$packets_after" -lt "$((packets_before+g_dontcountbytes))" ]]; then
+            disconnect
+            osnotify "AutoDisconnect has closed the inactive connection"
+            logentry "$interface closed (inactive) +$((packets_after-packets_before))"
+            break
+        else            
+            logentry "$interface checked (+$((packets_after-packets_before)))"
+            packets_before=$packets_after   
+        fi
 
-	done
-	
+    done
+    
 }
 
 # ---------------------------------------------------------------------------
