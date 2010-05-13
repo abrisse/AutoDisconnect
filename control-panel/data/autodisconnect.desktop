@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=0.4
+Name=AutoDisconnect
+Comment=Closes your idle connections & switch to 2G mode
+Type=HildonControlPanelPlugin
+Icon=autodisconnect
+X-control-panel-plugin=libautodisconnect.so
+Categories=connectivity

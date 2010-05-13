@@ -35,6 +35,8 @@ case "$1" in
         }
         [[ -z `gconftool-2 --get /apps/autodisconnect/param_running_options` ]] && gconftool-2 -s /apps/autodisconnect/param_running_options --type int 1
 
+        gconftool-2 -s /apps/autodisconnect/version --type string `dpkg -l autodisconnect | grep autodisconnect | awk '{print $3}'`
+
         echo "Installing network triggers ..."
         [[ -e /etc/network/if-up.d/99_autodisconnect ]] && rm -f /etc/network/if-up.d/99_autodisconnect # AutoDisconnect v.0.2
         [[ -e /etc/network/if-down.d/99_autodisconnect ]] && rm -f /etc/network/if-down.d/99_autodisconnect # AutoDisconnect v.0.1

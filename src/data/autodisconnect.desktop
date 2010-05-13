@@ -1,8 +1,9 @@
 [Desktop Entry]
 Encoding=UTF-8
-Version=0.2
-Type=Application
+Version=0.4
 Name=AutoDisconnect
+Comment=Closes your idle connections & switch to 2G mode
+Type=Application
 Exec=/opt/autodisconnect/autodisconnect
 Icon=autodisconnect
 X-HildonDesk-ShowInToolbar=true

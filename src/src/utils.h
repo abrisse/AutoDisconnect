@@ -1,5 +1,5 @@
 /*
-@version: 0.3
+@version: 0.4
 @author: Aymeric Brisse <aymeric.brisse@gmail.com>
 @license: GNU General Public License
 */
@@ -7,11 +7,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <stdio.h>
-
 /* Include the prototypes for GConf client functions */
 #include <gconf/gconf-client.h>
-#include <stdio.h>
 
 /* Banner - See http://doc.qt.nokia.com/qt-maemo-4.6/qmaemo5informationbox.html */
 #include <QMaemo5InformationBox>
@@ -25,15 +22,17 @@
 class Utils
 {
 public:
-    Utils();
-    static void displayNotification(QMainWindow* window, const char* value);
-
-    static void SetInteger(const char* key, int value);
-    static int GetInteger(const char* key);
-    static void SetBoolean(const char* key, bool value);
-    static bool GetBoolean(const char* key);
-
+  Utils();
+  static void displayNotification(QMainWindow* window, QString msg);
+  static void Load();
+  static void Unload();
+  static void SetBoolean(QString key, bool value);
+  static void SetInteger(QString key, int value);
+  static bool GetBoolean(QString key);
+  static int GetInteger(QString key);
+  static QString GetString(QString key);
 private:
+  static GConfClient* gconfClient;
 };
 
 #endif // UTILS_H

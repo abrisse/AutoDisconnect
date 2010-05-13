@@ -50,7 +50,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>801</width>
+      <width>800</width>
       <height>341</height>
      </rect>
     </property>
@@ -232,9 +232,15 @@
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>701</width>
+        <width>271</width>
         <height>60</height>
        </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
       <property name="font">
        <font>
@@ -243,7 +249,7 @@
        </font>
       </property>
       <property name="text">
-       <string>- Which connections do you want to check ?</string>
+       <string>- Connections  to check ?</string>
       </property>
      </widget>
      <widget class="QCheckBox" name="chkConnexionWLAN">
@@ -254,14 +260,20 @@
        <rect>
         <x>10</x>
         <y>70</y>
-        <width>200</width>
+        <width>141</width>
         <height>60</height>
        </rect>
       </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="minimumSize">
        <size>
-        <width>200</width>
-        <height>60</height>
+        <width>0</width>
+        <height>0</height>
        </size>
       </property>
       <property name="font">
@@ -277,16 +289,22 @@
      <widget class="QCheckBox" name="chkConnexionGPRS">
       <property name="geometry">
        <rect>
-        <x>260</x>
+        <x>170</x>
         <y>70</y>
-        <width>200</width>
+        <width>231</width>
         <height>60</height>
        </rect>
       </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="minimumSize">
        <size>
-        <width>200</width>
-        <height>60</height>
+        <width>0</width>
+        <height>0</height>
        </size>
       </property>
       <property name="font">
@@ -296,7 +314,7 @@
        </font>
       </property>
       <property name="text">
-       <string>GPRS / 3G</string>
+       <string>GPRS (2G/3G)</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_8">
@@ -319,10 +337,16 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>150</y>
-        <width>691</width>
-        <height>60</height>
+        <y>140</y>
+        <width>701</width>
+        <height>81</height>
        </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
       <property name="font">
        <font>
@@ -333,6 +357,12 @@
       <property name="text">
        <string>- Do not close connections when the following services are running</string>
       </property>
+      <property name="textFormat">
+       <enum>Qt::AutoText</enum>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QCheckBox" name="chkExceptionSSH">
       <property name="geometry">
@@ -342,6 +372,12 @@
         <width>271</width>
         <height>60</height>
        </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
       <property name="minimumSize">
        <size>
@@ -357,6 +393,71 @@
       </property>
       <property name="text">
        <string>SSH (client / server)</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_17">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>10</y>
+        <width>191</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>- Network Mode</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::AutoText</enum>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkUse2G">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>70</y>
+        <width>321</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Use 2G when 3G unused</string>
       </property>
       <property name="checked">
        <bool>false</bool>
@@ -722,12 +823,12 @@
      </widget>
     </widget>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="label_version">
     <property name="geometry">
      <rect>
       <x>20</x>
       <y>360</y>
-      <width>521</width>
+      <width>281</width>
       <height>60</height>
      </rect>
     </property>
@@ -744,7 +845,7 @@
      <string notr="true">color: rgb(88, 88, 88);</string>
     </property>
     <property name="text">
-     <string>AutoDisconnect - v.0.3 for Maemo5</string>
+     <string>AutoDisconnect - v.0.3.1</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_10">
@@ -761,6 +862,31 @@
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnAbout">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>360</y>
+      <width>211</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Sans Serif</family>
+      <pointsize>15</pointsize>
+     </font>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>About</string>
     </property>
    </widget>
   </widget>

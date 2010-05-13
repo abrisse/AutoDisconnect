@@ -1,5 +1,5 @@
 /*
-@version: 0.3
+@version: 0.4
 @author: Aymeric Brisse <aymeric.brisse@gmail.com>
 @license: GNU General Public License
 */
@@ -10,123 +10,120 @@ Utils::Utils()
 {
 }
 
-void Utils::displayNotification(QMainWindow* window, const char* value)
+/* Variable Declaration */
+GConfClient* Utils::gconfClient;
+
+/**
+ * Display Notification
+ */
+void Utils::displayNotification(QMainWindow* window, QString msg)
 {
-  char buffer[500];
-  sprintf(buffer,"%s%s%s","<font color='#000000'>",value, "</font>");
-  QMaemo5InformationBox::information(window, buffer, QMaemo5InformationBox::DefaultTimeout);
+  QString info = "<font color='#000000'>" + msg + "</font>";
+  QMaemo5InformationBox::information(window, info, QMaemo5InformationBox::DefaultTimeout);
+}
+
+/**
+ * Load gconf client
+ */
+void Utils::Load()
+{
+  gconfClient = gconf_client_get_default();
+  g_assert(GCONF_IS_CLIENT(gconfClient));
+}
+
+/**
+ * Unload gconf client
+ */
+void Utils::Unload()
+{
+  /* release GConf client */
+  g_object_unref(gconfClient);
 }
 
 /**
  * Store an integer key
  */
-void Utils::SetInteger(const char* key, int value)
+void Utils::SetInteger(QString key, int value)
 {
-  GConfClient* gconfClient = gconf_client_get_default();
-  g_assert(GCONF_IS_CLIENT(gconfClient));
-  char path[100];
-  sprintf(path, "%s%s", GC_ROOT, key);
+  key = GC_ROOT + key;
 
-  if(!gconf_client_set_int(gconfClient, path, value, NULL))
-    g_warning(" failed to set %smykey (%d)\n", GC_ROOT, value);
-
-  /* release GConf client */
-  g_object_unref(gconfClient);
+  if(!gconf_client_set_int(gconfClient, key.toStdString().c_str(), value, NULL))
+    g_warning("failed to set key\n");
 }
 
 /**
  * Store a boolean key
  */
-void Utils::SetBoolean(const char* key, bool value)
+void Utils::SetBoolean(QString key, bool value)
 {
-  GConfClient* gconfClient = gconf_client_get_default();
-  g_assert(GCONF_IS_CLIENT(gconfClient));
-  char path[100];
-  sprintf(path, "%s%s", GC_ROOT, key);
+  key = GC_ROOT + key;
 
-  if(!gconf_client_set_bool(gconfClient, path, value, NULL))
-    g_warning(" failed to set %smykey (%d)\n", GC_ROOT, value);
-
-  /* release GConf client */
-  g_object_unref(gconfClient);
+  if(!gconf_client_set_bool(gconfClient, key.toStdString().c_str(), value, NULL))
+    g_warning("failed to set key\n");
 }
 
 /**
  * Get a boolean value
  */
-bool Utils::GetBoolean(const char* key)
+bool Utils::GetBoolean(QString key)
 {
-  GConfClient* gconfClient = gconf_client_get_default();
-  g_assert(GCONF_IS_CLIENT(gconfClient));
-  char path[100];
-  sprintf(path, "%s%s", GC_ROOT, key);
+  key = GC_ROOT + key;
+  bool val = NULL;
 
   GConfValue* gcValue = NULL;
-  gcValue = gconf_client_get_without_default(gconfClient, path, NULL);
-
-  bool value;
+  gcValue = gconf_client_get_without_default(gconfClient, key.toStdString().c_str(), NULL);
 
   /* if value pointer remains NULL, the key was not found */
-  if(gcValue == NULL)
+  if(gcValue != NULL)
   {
-    g_warning(" key %smykey not found\n", GC_ROOT);
-    g_object_unref(gconfClient);
-    return NULL;
+    if (gcValue->type == GCONF_VALUE_BOOL)
+      val = gconf_value_get_bool(gcValue);
+    gconf_value_free(gcValue);
   }
 
-  /* Check if value type is integer */
-  if(gcValue->type == GCONF_VALUE_BOOL)
-  {
-    value = gconf_value_get_bool(gcValue);
-  }
-  else
-  {
-    g_warning(" key %smykey is not integer\n", GC_ROOT);
-  }
-
-  /* Release resources */
-  gconf_value_free(gcValue);
-  g_object_unref(gconfClient);
-
-  return value;
+  return val;
 }
 
 /**
  * Get an integer value
  */
-int Utils::GetInteger(const char* key)
+int Utils::GetInteger(QString key)
 {
-  GConfClient* gconfClient = gconf_client_get_default();
-  g_assert(GCONF_IS_CLIENT(gconfClient));
-  char path[100];
-  sprintf(path, "%s%s", GC_ROOT, key);
+  key = GC_ROOT + key;
+  int val = NULL;
 
   GConfValue* gcValue = NULL;
-  gcValue = gconf_client_get_without_default(gconfClient, path, NULL);
-
-   int value;
+  gcValue = gconf_client_get_without_default(gconfClient, key.toStdString().c_str(), NULL);
 
   /* if value pointer remains NULL, the key was not found */
-  if(gcValue == NULL)
+  if(gcValue != NULL)
   {
-    g_warning(" key %smykey not found\n", GC_ROOT);
-    g_object_unref(gconfClient);
-    return NULL;
+    if (gcValue->type == GCONF_VALUE_INT)
+      val = gconf_value_get_int(gcValue);
+    gconf_value_free(gcValue);
   }
 
-  /* Check if value type is integer */
-  if(gcValue->type == GCONF_VALUE_INT)
+  return val;
+}
+
+/**
+ * Get an string value
+ */
+QString Utils::GetString(QString key)
+{
+  key = GC_ROOT + key;
+  QString val = "";
+
+  GConfValue* gcValue = NULL;
+  gcValue = gconf_client_get_without_default(gconfClient, key.toStdString().c_str(), NULL);
+
+  /* if value pointer remains NULL, the key was not found */
+  if(gcValue != NULL)
   {
-    value = gconf_value_get_int(gcValue);
-  }
-  else
-  {
-    g_warning(" key %smykey is not integer\n", GC_ROOT);
+    if (gcValue->type == GCONF_VALUE_STRING)
+      val = QString(gconf_value_get_string(gcValue));
+    gconf_value_free(gcValue);
   }
 
-  /* Release resources */
-  gconf_value_free(gcValue);
-  g_object_unref(gconfClient);
-
-  return value;
+  return val;
 }

@@ -1,5 +1,5 @@
 /*
-@version: 0.3
+@version: 0.4
 @author: Aymeric Brisse <aymeric.brisse@gmail.com>
 @license: GNU General Public License
 */
@@ -8,31 +8,30 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <string.h>
-
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+  QMainWindow(parent),
+  ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-    loadValues();
+  ui->setupUi(this);
+  loadValues();
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+  delete ui;
+  Utils::Unload();
 }
 
 void MainWindow::changeEvent(QEvent *e)
 {
-    QMainWindow::changeEvent(e);
-    switch (e->type()) {
+  QMainWindow::changeEvent(e);
+  switch (e->type()) {
     case QEvent::LanguageChange:
-        ui->retranslateUi(this);
-        break;
+      ui->retranslateUi(this);
+      break;
     default:
-        break;
-    }
+      break;
+  }
 }
 
 void MainWindow::on_btnSave_clicked()
@@ -55,6 +54,7 @@ void MainWindow::on_btnSave_clicked()
   Utils::SetBoolean("param_connection_wlan", ui->chkConnexionWLAN->checkState());
   Utils::SetBoolean("param_connection_gprs", ui->chkConnexionGPRS->checkState());
   Utils::SetBoolean("param_exception_ssh", ui->chkExceptionSSH->checkState());
+  Utils::SetBoolean("param_use_2g", ui->chkUse2G->checkState());
 
   /* Network - Parameters */
   switch (ui->unitList->currentIndex())
@@ -76,11 +76,18 @@ void MainWindow::on_btnSave_clicked()
   Utils::SetBoolean("param_bluetooth_enable", ui->chkBluetooth->checkState());
   Utils::SetInteger("param_bluetooth_interval", ui->spinIntervalBluetooth->value());
 
-  Utils::displayNotification(this, "Settings have been saved and will be taken in account at the next reconnection!");
+  Utils::displayNotification(this, "Settings have been saved and will be taken in account at the next reconnection");
 }
 
 void MainWindow::loadValues()
 {
+  Utils::Load();
+
+  QString version = "AutoDisconnect v" + Utils::GetString("version");
+
+  this->setWindowTitle(version);
+  ui->label_version->setText(version);
+
   int min_bytes = Utils::GetInteger("param_min_bytes");
 
   /* Network - Parameters */
@@ -129,8 +136,17 @@ void MainWindow::loadValues()
   ui->chkConnexionWLAN->setChecked(Utils::GetBoolean("param_connection_wlan"));
   ui->chkConnexionGPRS->setChecked(Utils::GetBoolean("param_connection_gprs"));  
   ui->chkExceptionSSH->setChecked(Utils::GetBoolean("param_exception_ssh"));
+  ui->chkUse2G->setChecked(Utils::GetBoolean("param_use_2g"));
 
   /* Bluetooth */
   ui->chkBluetooth->setChecked(Utils::GetBoolean("param_bluetooth_enable"));
   ui->spinIntervalBluetooth->setValue(Utils::GetInteger("param_bluetooth_interval"));
+}
+
+void MainWindow::on_btnAbout_clicked()
+{
+  QString aboutText = "\nAutoDisconnect is an application which makes your batteries last much longer by closing your idle connections (Wifi + 3G/GPRS + Bluetooth)";
+  aboutText += " and by switching to 2G when 3G is not required. You can custom a lot of parameters.\n\n";
+  aboutText += "Written by Aymeric Brisse - aymeric.brisse@gmail.com\n";
+  QMessageBox::about(this, "About", aboutText);
 }
