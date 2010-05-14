@@ -8,10 +8,10 @@
 # License: GNU General Public License
 #
 
-AUTODISCONNECT=/opt/autodisconnect/autodisconnect-network-check
+AUTODISCONNECT=/opt/autodisconnect/autodisconnect-pre-network-check
 
 if [ ! -x $AUTODISCONNECT ]; then
 	exit 0
 fi
 
-$AUTODISCONNECT &
+$AUTODISCONNECT

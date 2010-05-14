@@ -3,7 +3,7 @@
 #
 # App : AutoDisconnect
 # Url : https://garage.maemo.org/projects/autodisconnect/
-# Version: 0.3
+# Version: 0.4
 # Author: Aymeric Brisse <aymeric.brisse@gmail.com>
 # License: GNU General Public License
 #
@@ -29,13 +29,16 @@ readparameters()
     g_dontcountbytespermin="`gconftool-2 -g /apps/autodisconnect/param_min_bytes`"
 
     # Exceptions
-    g_exceptions=
+    g_exceptions=""
     [[ "`gconftool-2 -g /apps/autodisconnect/param_exception_ssh`" = true ]] && g_exceptions="ssh "$g_exceptions
 
     # Network Interfaces to check
-    g_enable=
+    g_enable=""
     [[ "`gconftool-2 -g /apps/autodisconnect/param_connection_wlan`" = true ]] && g_enable="wlan "$g_enable
     [[ "`gconftool-2 -g /apps/autodisconnect/param_connection_gprs`" = true ]] && g_enable="gprs "$g_enable
+
+    # Auto 2G Mode
+    g_use_2g="`gconftool-2 -g /apps/autodisconnect/param_use_2g`"
 
     # Where to store the logfile. This is cleared when it goes over 50k.
     logfile=/var/log/autodisconnect.log
@@ -133,7 +136,6 @@ disable_quit()
 # Disabled for some interfaces
 #
 {
-    short_interface=`echo "$interface" | tr -d 0-9`
     connection_check=`echo "$g_enable" | grep "$short_interface" 2>/dev/null`
     
     if [[ -n "$short_interface" -a -n "$connection_check" ]]; then
@@ -143,6 +145,24 @@ disable_quit()
         logentry "$interface ignored"
         logentry "<Stop>"
         exit 0
+    fi
+}
+
+# ---------------------------------------------------------------------------
+switch_2G()
+# ---------------------------------------------------------------------------
+# Switch network mode to 2G
+#
+# No args
+{
+    if [[ "`dbus-send --system --type=method_call --print-reply --dest=com.nokia.phone.net /com/nokia/phone/net Phone.Net.get_selected_radio_access_technology | awk '/b/ {print $2}'`" -ne 1 ]]; then
+
+        dbus-send --system --type=method_call \
+        --dest=com.nokia.phone.net /com/nokia/phone/net \
+        Phone.Net.set_selected_radio_access_technology byte:1
+
+        logentry "switched to 2G"
+
     fi
 }
 
@@ -166,6 +186,13 @@ main()
         # gprs0 generally
         interface="`grep gprs0 /proc/net/route | tail -1 | cut -f1`"
     fi
+
+    short_interface=`echo "$interface" | tr -d 0-9`
+
+    # Switch network mode to 2G if allowed
+    [[ $short_interface = "wlan" -a $g_use_2g = true ]] && {
+        switch_2G
+    }
 
     # Quit if this interface doesn't have to be checked
     disable_quit
@@ -234,7 +261,11 @@ main()
 # Start AutoDisconnect
 
 g_running_options="`gconftool-2 -g /apps/autodisconnect/param_running_options`"
-[[ $g_running_options != 0 ]] && main && logentry "<Stop>"
+
+if [[ $g_running_options != 0 ]]; then
+    main
+    logentry "<Stop>"
+fi
 
 exit 0
 

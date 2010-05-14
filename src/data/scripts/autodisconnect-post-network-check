@@ -1,0 +1,91 @@
+#!/bin/sh
+
+#
+# App : AutoDisconnect
+# Url : https://garage.maemo.org/projects/autodisconnect/
+# Version: 0.4
+# Author: Aymeric Brisse <aymeric.brisse@gmail.com>
+# License: GNU General Public License
+#
+
+# ---------------------------------------------------------------------------
+# FUNCTIONS
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+readparameters()
+# ---------------------------------------------------------------------------
+{
+    # Enable logging
+    g_logging="true"
+
+    # Where to store the logfile. This is cleared when it goes over 50k.
+    logfile=/var/log/autodisconnect.log
+}
+
+# ---------------------------------------------------------------------------
+logentry()
+# ---------------------------------------------------------------------------
+# Send a string to this function to append it to the log file
+#
+# Arg 1 - The text to log
+{
+    [[ "$g_logging" = "true" ]] && {
+        echo -e "[`date +%T`][$$][Network] $1" >> $logfile
+    }
+}
+
+# ---------------------------------------------------------------------------
+switch_2G()
+# ---------------------------------------------------------------------------
+# Switch network mode to 2G
+#
+# No args
+{
+    if [[ "`dbus-send --system --type=method_call --print-reply --dest=com.nokia.phone.net /com/nokia/phone/net Phone.Net.get_selected_radio_access_technology | awk '/b/ {print $2}'`" -ne 1 ]]; then
+
+        dbus-send --system --type=method_call \
+        --dest=com.nokia.phone.net /com/nokia/phone/net \
+        Phone.Net.set_selected_radio_access_technology byte:1
+
+        logentry "switched to 2G"
+
+        # Wait 2 seconds for the interface to be again available
+        sleep 2
+
+    fi
+}
+
+# ---------------------------------------------------------------------------
+main()
+# ---------------------------------------------------------------------------
+# Main entry point
+#
+{
+    # Read parameters
+    readparameters
+
+    # Init
+    logentry "<Start@>"
+
+    # Get the interface is not possible. See https://bugs.maemo.org/show_bug.cgi?id=7733
+    # So it applies here for every interface
+
+    charging_status="`lshal -u '/org/freedesktop/Hal/devices/bme' | grep battery.rechargeable.is_charging | awk '{print $3}'`"
+
+    if [[ $g_running_options != 2 -o $charging_status = false ]]; then
+      switch_2G
+    fi 
+}
+
+# ---------------------------------------------------------------------------
+# RUNTIME
+# ---------------------------------------------------------------------------
+
+# Start AutoDisconnect
+
+g_running_options="`gconftool-2 -g /apps/autodisconnect/param_running_options`"
+[[ $g_running_options != 0 ]] && main && logentry "<Stop@>"
+
+exit 0
+
