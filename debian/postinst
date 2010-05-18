@@ -21,33 +21,53 @@ case "$1" in
     configure)
         # Parameters
 		echo "Updating configuration ..."
-        [[ -z `gconftool-2 --get /apps/autodisconnect/param_interval` ]] && gconftool-2 -s /apps/autodisconnect/param_interval --type int 5
-        [[ -z `gconftool-2 --get /apps/autodisconnect/param_min_bytes` ]] && gconftool-2 -s /apps/autodisconnect/param_min_bytes --type int 2048
-        [[ -z `gconftool-2 --get /apps/autodisconnect/param_notifications` ]] && gconftool-2 -s /apps/autodisconnect/param_notifications --type bool false
-        [[ -z `gconftool-2 --get /apps/autodisconnect/param_exception_ssh` ]] && gconftool-2 -s /apps/autodisconnect/param_exception_ssh --type bool true
-        [[ -z `gconftool-2 --get /apps/autodisconnect/param_exception_openvpn` ]] && gconftool-2 -s /apps/autodisconnect/param_exception_openvpn --type bool true
-        [[ -z `gconftool-2 --get /apps/autodisconnect/param_connection_wlan` ]] && gconftool-2 -s /apps/autodisconnect/param_connection_wlan --type bool true
-        [[ -z `gconftool-2 --get /apps/autodisconnect/param_connection_gprs` ]] && gconftool-2 -s /apps/autodisconnect/param_connection_gprs --type bool true
-        [[ -z `gconftool-2 --get /apps/autodisconnect/param_use_2g` ]] && gconftool-2 -s /apps/autodisconnect/param_use_2g --type bool false
-        [[ -z `gconftool-2 --get /apps/autodisconnect/param_bluetooth_enable` ]] && gconftool-2 -s /apps/autodisconnect/param_bluetooth_enable --type bool false
-        [[ -z `gconftool-2 --get /apps/autodisconnect/param_bluetooth_interval` ]] && gconftool-2 -s /apps/autodisconnect/param_bluetooth_interval --type int 10
+
+        # Network 
+        val="`gconftool-2 --get /apps/autodisconnect/param_interval 2>/dev/null`" # AutoDisconnect < v.0.3 settings        
+        if [[ -z "$val" ]]; then
+            val=5
+        else
+            gconftool-2 --unset /apps/autodisconnect/param_interval
+        fi
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_gprs_interval 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_gprs_interval --type int "$val"
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_wlan_interval 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_wlan_interval --type int "$val"
+
+        val="`gconftool-2 --get /apps/autodisconnect/param_min_bytes 2>/dev/null`" # AutoDisconnect < v.0.3 settings
+        if [[ -z "$val" ]]; then
+            val=2048
+        else
+            gconftool-2 --unset /apps/autodisconnect/param_min_bytes
+        fi
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_gprs_traffic 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_gprs_traffic --type int "$val"
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_wlan_traffic 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_wlan_traffic --type int "$val"
         
-        [[ -n `gconftool-2 --get /apps/autodisconnect/param_enabled` ]] && {
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_exception_ssh 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_exception_ssh --type bool true
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_exception_openvpn 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_exception_openvpn --type bool true
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_connection_wlan 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_connection_wlan --type bool true
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_connection_gprs 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_connection_gprs --type bool true
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_use_2g 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_use_2g --type bool false
+
+        # Bluetooth
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_bluetooth_enable 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_bluetooth_enable --type bool false
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_bluetooth_interval 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_bluetooth_interval --type int 10
+        
+        # General
+        [[ -n "`gconftool-2 --get /apps/autodisconnect/param_enabled 2>/dev/null`" ]] && {
             # Remove AutoDisconnect < v.0.3 settings
-            [[ `gconftool-2 --get /apps/autodisconnect/param_enabled` = false ]] && gconftool-2 -s /apps/autodisconnect/param_running_options --type int 0
-            [[ `gconftool-2 --get /apps/autodisconnect/param_enabled` = true ]] && gconftool-2 -s /apps/autodisconnect/param_running_options --type int 1
+            [[ "`gconftool-2 --get /apps/autodisconnect/param_enabled 2>/dev/null`" = false ]] && gconftool-2 --set /apps/autodisconnect/param_running_options --type int 0
+            [[ "`gconftool-2 --get /apps/autodisconnect/param_enabled 2>/dev/null`" = true ]] && gconftool-2 --set /apps/autodisconnect/param_running_options --type int 1
             gconftool-2 --unset /apps/autodisconnect/param_enabled
         }
-
-        [[ -z `gconftool-2 --get /apps/autodisconnect/param_running_options` ]] && gconftool-2 -s /apps/autodisconnect/param_running_options --type int 1
-
-        # Version
-        gconftool-2 -s /apps/autodisconnect/version --type string `dpkg -l autodisconnect | grep autodisconnect | awk '{print $3}'`
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_running_options 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_running_options --type int 1
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_notifications 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_notifications --type bool false
 
         # Instance
-        [[ -z `gconftool-2 --get /apps/autodisconnect/current_instance` ]] && gconftool-2 -s /apps/autodisconnect/current_instance --type int 0
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/current_instance 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/current_instance --type int 0
 
-        # Log can be written by user
+        # Version
+        gconftool-2 --set /apps/autodisconnect/version --type string "`dpkg -l autodisconnect | grep autodisconnect | awk '{print $3}'`"
+
+        # Log file rights (User)
         [[ ! -e /var/log/autodisconnect.log ]] && touch /var/log/autodisconnect.log
         chmod 666 /var/log/autodisconnect.log
 
