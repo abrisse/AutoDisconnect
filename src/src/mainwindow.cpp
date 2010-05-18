@@ -50,10 +50,10 @@ void MainWindow::on_btnAbout_clicked()
  */
 void MainWindow::saveValues()
 {
-  int coeff=1;
+  int coeff;
   int running_options;
 
-  /* Running Options */
+  /* General */
   if (ui->radioEnabledAlways->isChecked())
     running_options = 1;
   else if (ui->radioEnabledNotCharging->isChecked())
@@ -64,7 +64,7 @@ void MainWindow::saveValues()
   Utils::SetInteger("param_running_options",  running_options);
   Utils::SetBoolean("param_notifications",  ui->chkNotifications->checkState());
 
-  /* Network - Connections */
+  /* Network */
   Utils::SetBoolean("param_connection_wlan", ui->chkConnexionWLAN->checkState());
   Utils::SetBoolean("param_connection_gprs", ui->chkConnexionGPRS->checkState());
   Utils::SetBoolean("param_use_2g", ui->chkUse2G->checkState());
@@ -74,8 +74,9 @@ void MainWindow::saveValues()
   Utils::SetBoolean("param_exception_im_accounts", ui->chkExceptionIMAccounts->checkState());
   Utils::SetBoolean("param_exception_voip", ui->chkExceptionVoIP->checkState());
 
-  /* Network - Parameters */
-  switch (ui->unitList->currentIndex())
+  /* Network GPRS - Parameters */
+  coeff = 1;
+  switch (ui->unitListGPRS->currentIndex())
   {
   case 2:
     coeff *= 1024;
@@ -87,8 +88,25 @@ void MainWindow::saveValues()
     break;
   }
 
-  Utils::SetInteger("param_interval", ui->spinInterval->value());
-  Utils::SetInteger("param_min_bytes", ui->spinMinBytes->value()*coeff);  
+  Utils::SetInteger("param_gprs_interval", ui->spinIntervalGPRS->value());
+  Utils::SetInteger("param_gprs_traffic", ui->spinMinBytesGPRS->value()*coeff);
+
+  /* Network WLAN - Parameters */
+  coeff = 1;
+  switch (ui->unitListWLAN->currentIndex())
+  {
+  case 2:
+    coeff *= 1024;
+
+  case 1:
+    coeff *= 1024;
+
+  default:
+    break;
+  }
+
+  Utils::SetInteger("param_wlan_interval", ui->spinIntervalWLAN->value());
+  Utils::SetInteger("param_wlan_traffic", ui->spinMinBytesWLAN->value()*coeff);
 
   /* Bluetooth */
   Utils::SetBoolean("param_bluetooth_enable", ui->chkBluetooth->checkState());
@@ -106,14 +124,31 @@ void MainWindow::loadValues()
 {
   Utils::Load();
 
+  /* Version */
   QString version = "AutoDisconnect v" + Utils::GetString("version");
-
   this->setWindowTitle(version);
   ui->label_version->setText(version);
 
-  int min_bytes = Utils::GetInteger("param_min_bytes");
+  /* General */
+  int running_options = Utils::GetInteger("param_running_options");
 
-  /* Network - Parameters */
+  switch(running_options)
+  {
+  case 0:
+    ui->radioEnabledNever->setChecked(true);
+    break;
+  case 1:
+    ui->radioEnabledAlways->setChecked(true);
+    break;
+  case 2:
+    ui->radioEnabledNotCharging->setChecked(true);
+    break;
+  }
+
+  ui->chkNotifications->setChecked(Utils::GetBoolean("param_notifications"));
+
+  /* Network - GPRS */
+  int min_bytes = Utils::GetInteger("param_gprs_traffic");
   int traffic_value;
   int unit_index;
 
@@ -133,29 +168,34 @@ void MainWindow::loadValues()
     traffic_value=(int)(min_bytes/1048576);
   }
 
-  ui->spinMinBytes->setValue(traffic_value);
-  ui->unitList->setCurrentIndex(unit_index);
-  ui->spinInterval->setValue(Utils::GetInteger("param_interval"));
+  ui->spinMinBytesGPRS->setValue(traffic_value);
+  ui->unitListGPRS->setCurrentIndex(unit_index);
+  ui->spinIntervalGPRS->setValue(Utils::GetInteger("param_gprs_interval"));
 
-  /* Running Options */
-  int running_options = Utils::GetInteger("param_running_options");
+  /* Network - WLAN */
+  min_bytes = Utils::GetInteger("param_wlan_traffic");
 
-  switch(running_options)
+  if (min_bytes<1024)
   {
-  case 0:
-    ui->radioEnabledNever->setChecked(true);
-    break;
-  case 1:
-    ui->radioEnabledAlways->setChecked(true);
-    break;
-  case 2:
-    ui->radioEnabledNotCharging->setChecked(true);
-    break;
+    unit_index=0;
+    traffic_value=min_bytes;
+  }
+  else if (min_bytes < 1048576)
+  {
+    unit_index=1;
+    traffic_value=(int)(min_bytes/1024);
+  }
+  else
+  {
+    unit_index=2;
+    traffic_value=(int)(min_bytes/1048576);
   }
 
-  ui->chkNotifications->setChecked(Utils::GetBoolean("param_notifications"));
+  ui->spinMinBytesWLAN->setValue(traffic_value);
+  ui->unitListWLAN->setCurrentIndex(unit_index);
+  ui->spinIntervalWLAN->setValue(Utils::GetInteger("param_wlan_interval"));
 
-  /* Network - Connections */
+  /* Network */
   ui->chkConnexionWLAN->setChecked(Utils::GetBoolean("param_connection_wlan"));
   ui->chkConnexionGPRS->setChecked(Utils::GetBoolean("param_connection_gprs"));  
   ui->chkUse2G->setChecked(Utils::GetBoolean("param_use_2g"));

@@ -64,7 +64,7 @@
      <enum>QTabWidget::North</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="elideMode">
      <enum>Qt::ElideMiddle</enum>
@@ -806,7 +806,7 @@
        <string>Interval :</string>
       </property>
      </widget>
-     <widget class="QSpinBox" name="spinMinBytesWifi">
+     <widget class="QSpinBox" name="spinMinBytesWLAN">
       <property name="geometry">
        <rect>
         <x>130</x>
@@ -849,7 +849,7 @@
        <number>2</number>
       </property>
      </widget>
-     <widget class="QComboBox" name="unitListWifi">
+     <widget class="QComboBox" name="unitListWLAN">
       <property name="geometry">
        <rect>
         <x>330</x>
@@ -902,7 +902,7 @@
        <string>Traffic :</string>
       </property>
      </widget>
-     <widget class="QSpinBox" name="spinIntervalWifi">
+     <widget class="QSpinBox" name="spinIntervalWLAN">
       <property name="geometry">
        <rect>
         <x>130</x>
@@ -981,6 +981,22 @@
       </property>
       <property name="text">
        <string>- How often to check your Wifi activity?</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_22">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>800</width>
+        <height>1</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(161, 161, 161)</string>
+      </property>
+      <property name="text">
+       <string/>
       </property>
      </widget>
     </widget>
