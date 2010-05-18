@@ -19,7 +19,7 @@ GConfClient* Utils::gconfClient;
 void Utils::displayNotification(QMainWindow* window, QString msg)
 {
   QString info = "<font color='#000000'>" + msg + "</font>";
-  QMaemo5InformationBox::information(window, info, QMaemo5InformationBox::DefaultTimeout);
+  QMaemo5InformationBox::information(window, info, QMaemo5InformationBox::NoTimeout);
 }
 
 /**
@@ -126,4 +126,12 @@ QString Utils::GetString(QString key)
   }
 
   return val;
+}
+
+/**
+ * Run the bluetooth checker
+ */
+void Utils::RunBluetoothChecker()
+{
+  QProcess::startDetached("/opt/autodisconnect/autodisconnect-bluetooth-check");
 }

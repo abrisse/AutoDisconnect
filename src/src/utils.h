@@ -13,6 +13,7 @@
 /* Banner - See http://doc.qt.nokia.com/qt-maemo-4.6/qmaemo5informationbox.html */
 #include <QMaemo5InformationBox>
 #include <QMainWindow>
+#include <QProcess>
 
 /* The application name -part of the GConf namespace */
 #define APP_NAME "autodisconnect"
@@ -31,6 +32,7 @@ public:
   static bool GetBoolean(QString key);
   static int GetInteger(QString key);
   static QString GetString(QString key);
+  static void RunBluetoothChecker();
 private:
   static GConfClient* gconfClient;
 };

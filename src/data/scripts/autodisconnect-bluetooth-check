@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ash
 
 #
 # App : AutoDisconnect
@@ -12,21 +12,29 @@
 # FUNCTIONS
 # ---------------------------------------------------------------------------
 
+GC_ROOT="/apps/autodisconnect"
+
+# ---------------------------------------------------------------------------
+getvalue()
+# ---------------------------------------------------------------------------
+# Get Conf value
+#
+{
+    echo "`gconftool-2 -g $GC_ROOT/param_$1`"
+}
+
 # ---------------------------------------------------------------------------
 readparameters()
 # ---------------------------------------------------------------------------
 {
     # How often to test for inactivity (min)
-    g_samplerate="`gconftool-2 -g /apps/autodisconnect/param_bluetooth_interval`"
+    g_samplerate=`getvalue "bluetooth_interval"`
 
     # Enable logging
-    g_logging="true"
+    g_logging=true
 
     # Notifications
-    g_notifications="`gconftool-2 -g /apps/autodisconnect/param_notifications`"
-    
-    # Bluetooth
-    g_check_bluetooth="`gconftool-2 -g /apps/autodisconnect/param_bluetooth_enable`"
+    g_notifications=`getvalue "notifications"`
 
     # Where to store the logfile. This is cleared when it goes over 50k.
     logfile=/var/log/autodisconnect.log
@@ -36,11 +44,32 @@ readparameters()
 }
 
 # ---------------------------------------------------------------------------
+killsiblings()
+# ---------------------------------------------------------------------------
+# Kill other instances of the process
+#
+{
+    TmpFile=/tmp/$(basename $0).tmp
+
+    `ps | egrep 'S[ ]*/bin/ash[ ]*/opt/autodisconnect/autodisconnect-bluetooth' | sed 's/^[ ]*\([0-9]*\) .*$/\1/g' > $TmpFile`
+
+    while read Pid
+    do
+        [[ -n "$Pid" -a "$Pid" -ne "$$" ]] && {
+            logentry "<Kill $Pid>"
+            kill -KILL $Pid
+        }
+    done < $TmpFile
+}
+
+# ---------------------------------------------------------------------------
 init()
 # ---------------------------------------------------------------------------
+# Init
+#
 {
-    # Log monitor startup to file
-    logentry "<Start>"
+    # Log
+    logentry "<@Start>"
 
     # Allow dbus to work
     [[ -e /tmp/dbus-info ]] && eval `cat /tmp/dbus-info`
@@ -63,7 +92,7 @@ logentry()
 #
 # Arg 1 - The text to log
 {
-    [[ "$g_logging" = "true" ]] && {
+    [[ "$g_logging" = true ]] && {
         echo -e "[`date +%T`][$$][Bluetooth] $1" >> $logfile
     }
 }
@@ -75,7 +104,7 @@ osnotify()
 #
 # Arg 1 - The text to display
 {
-    [[ "$g_notifications" = "true" ]] && {
+    [[ "$g_notifications" = true ]] && {
         /usr/bin/dbus-send --type=method_call \
         --dest=org.freedesktop.Notifications \
         /org/freedesktop/Notifications \
@@ -99,6 +128,16 @@ disconnect()
 }
 
 # ---------------------------------------------------------------------------
+isrunning()
+# ---------------------------------------------------------------------------
+# Check if a process is running
+#
+# Arg 1 - the service
+{
+	test -n "`ps | grep "$1" | grep -v grep`"
+}
+
+# ---------------------------------------------------------------------------
 readbluetooth()
 # ---------------------------------------------------------------------------
 # Check Bluetooth Status
@@ -108,9 +147,9 @@ readbluetooth()
     bluetooth_status_old=$bluetooth_status
     bluetooth_connected_old=$bluetooth_connected
     
-    if [[ -n "`hciconfig | grep RUNNING`" ]]; then
+    if [[ -n "`/usr/sbin/hciconfig | grep RUNNING`" ]]; then
         bluetooth_status=true
-        if [[ "`hcitool con | wc -l`" -gt 1 ]]; then
+        if [[ "`/usr/bin/hcitool con | wc -l`" -gt 1 ]]; then
             bluetooth_connected=true
         else
             bluetooth_connected=false
@@ -128,25 +167,42 @@ main()
 # Main entry point
 #
 {
+    # Read parameters
+    readparameters
+
     # Init -> dbus & log
-    init
+    init   
+ 
+    readbluetooth    
     
-    readbluetooth
-    
-    #PERFORM MAIN MONITORING LOOPS
+    # MONITORING LOOP
     while true
     do
         sleep $g_samplerate
 
-        readparameters
         readbluetooth
 
-        # Check the traffic volume
-        if [[ "$g_check_bluetooth" = true -a "$bluetooth_status" = true -a "$bluetooth_status_old" = true -a "$bluetooth_connected" = false -a "$bluetooth_connected_old" = false  ]]; then
-            disconnect
-            bluetooth_status=false
-            osnotify "AutoDisconnected has disabled the inactive Bluetooth"
-            logentry "bluetooth closed (inactive)"
+        # Check the bluetooth status
+        if [[ "$bluetooth_status" = true -a "$bluetooth_status_old" = true -a "$bluetooth_connected" = false -a "$bluetooth_connected_old" = false  ]]; then
+
+            exception_apply=false
+
+            # Check if the FM Radio Application is not running
+            if `isrunning "/usr/bin/FMRadio"`; then
+                exception_apply=true
+                logentry "bluetooth checked (fm_radio)"
+            fi
+
+            # ... block for other exceptions
+            
+            if [[ $exception_apply = false ]]; then
+                bluetooth_status=false
+                bluetooth_connected=false
+                disconnect
+                osnotify "AutoDisconnected has disabled the inactive Bluetooth"
+                logentry "bluetooth closed (inactive)"
+            fi
+
         else            
             logentry "bluetooth checked"
         fi
@@ -159,9 +215,14 @@ main()
 # RUNTIME
 # ---------------------------------------------------------------------------
 
-# Start AutoDisconnect
+# Kill every instances already running
+killsiblings
 
-main
+g_check_bluetooth=`getvalue "bluetooth_enable"`
+if [[ "$g_check_bluetooth" = true ]]; then
+    main
+    logentry "<Stop>"
+fi
 
 exit 0
 

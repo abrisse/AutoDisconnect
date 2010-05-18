@@ -36,6 +36,20 @@ void MainWindow::changeEvent(QEvent *e)
 
 void MainWindow::on_btnSave_clicked()
 {
+  saveValues();
+  close();
+}
+
+void MainWindow::on_btnAbout_clicked()
+{
+  about();
+}
+
+/**
+ * Save parameters
+ */
+void MainWindow::saveValues()
+{
   int coeff=1;
   int running_options;
 
@@ -53,8 +67,12 @@ void MainWindow::on_btnSave_clicked()
   /* Network - Connections */
   Utils::SetBoolean("param_connection_wlan", ui->chkConnexionWLAN->checkState());
   Utils::SetBoolean("param_connection_gprs", ui->chkConnexionGPRS->checkState());
-  Utils::SetBoolean("param_exception_ssh", ui->chkExceptionSSH->checkState());
   Utils::SetBoolean("param_use_2g", ui->chkUse2G->checkState());
+
+  Utils::SetBoolean("param_exception_ssh", ui->chkExceptionSSH->checkState());
+  Utils::SetBoolean("param_exception_openvpn", ui->chkExceptionOpenVPN->checkState());
+  Utils::SetBoolean("param_exception_im_accounts", ui->chkExceptionIMAccounts->checkState());
+  Utils::SetBoolean("param_exception_voip", ui->chkExceptionVoIP->checkState());
 
   /* Network - Parameters */
   switch (ui->unitList->currentIndex())
@@ -76,9 +94,14 @@ void MainWindow::on_btnSave_clicked()
   Utils::SetBoolean("param_bluetooth_enable", ui->chkBluetooth->checkState());
   Utils::SetInteger("param_bluetooth_interval", ui->spinIntervalBluetooth->value());
 
+  Utils::RunBluetoothChecker();
+
   Utils::displayNotification(this, "Settings have been saved and will be taken in account at the next reconnection");
 }
 
+/**
+ * Load parameters
+ */
 void MainWindow::loadValues()
 {
   Utils::Load();
@@ -135,15 +158,22 @@ void MainWindow::loadValues()
   /* Network - Connections */
   ui->chkConnexionWLAN->setChecked(Utils::GetBoolean("param_connection_wlan"));
   ui->chkConnexionGPRS->setChecked(Utils::GetBoolean("param_connection_gprs"));  
-  ui->chkExceptionSSH->setChecked(Utils::GetBoolean("param_exception_ssh"));
   ui->chkUse2G->setChecked(Utils::GetBoolean("param_use_2g"));
+
+  ui->chkExceptionSSH->setChecked(Utils::GetBoolean("param_exception_ssh"));
+  ui->chkExceptionOpenVPN->setChecked(Utils::GetBoolean("param_exception_openvpn"));
+  ui->chkExceptionIMAccounts->setChecked(Utils::GetBoolean("param_exception_im_accounts"));
+  ui->chkExceptionVoIP->setChecked(Utils::GetBoolean("param_exception_voip"));
 
   /* Bluetooth */
   ui->chkBluetooth->setChecked(Utils::GetBoolean("param_bluetooth_enable"));
   ui->spinIntervalBluetooth->setValue(Utils::GetInteger("param_bluetooth_interval"));
 }
 
-void MainWindow::on_btnAbout_clicked()
+/**
+ * Display About Information
+ */
+void MainWindow::about()
 {
   QString aboutText = "\nAutoDisconnect is an application which makes your batteries last much longer by closing your idle connections (Wifi + 3G/GPRS + Bluetooth)";
   aboutText += " and by switching to 2G when 3G is not required. You can custom a lot of parameters.\n\n";

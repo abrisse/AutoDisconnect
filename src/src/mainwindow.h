@@ -23,6 +23,8 @@ public:
 protected:
   void changeEvent(QEvent *e);
   void loadValues();
+  void saveValues();
+  void about();
 
 private:
   Ui::MainWindow *ui;

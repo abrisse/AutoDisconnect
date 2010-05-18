@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ash
 # postrm script for autodisconnect
 #
 # see: dh_installdeb(1)
@@ -27,12 +27,25 @@ case "$1" in
     ;;
 
     remove|abort-install|upgrade|failed-upgrade|abort-upgrade|disappear)
+        echo "Terminating running processes ..."
+
+        TmpFile=/tmp/$(basename $0).tmp
+
+        `ps | egrep 'S[ ]*/bin/ash[ ]*/opt/autodisconnect/autodisconnect-bluetooth' | sed 's/^[ ]*\([0-9]*\) .*$/\1/g' > $TmpFile`
+        `ps | egrep 'S[ ]*/bin/ash[ ]*/opt/autodisconnect/autodisconnect-network' | sed 's/^[ ]*\([0-9]*\) .*$/\1/g' > $TmpFile`
+
+        while read Pid
+        do
+            [[ -n "$Pid" ]] && {
+                kill -KILL $Pid
+            }
+        done < $TmpFile
+
         echo "Removing network triggers ..."
         [[ -e /etc/network/if-up.d/99_autodisconnect_network ]] && rm -f /etc/network/if-up.d/99_autodisconnect_network
-        [[ -e /etc/event.d/autodisconnect ]] && {
-            initctl stop autodisconnect
-            rm -f /etc/event.d/autodisconnect
-        }     
+        [[ -e /etc/network/if-pre-up.d/99_autodisconnect_pre_network ]] && rm -f /etc/network/if-pre-up.d/99_autodisconnect_pre_network
+        [[ -e /etc/network/if-post-down.d/99_autodisconnect_post_network ]] && rm -f /etc/network/if-post-down.d/99_autodisconnect_post_network
+        [[ -e /etc/event.d/autodisconnect ]] && rm -f /etc/event.d/autodisconnect
     ;;
 
     *)

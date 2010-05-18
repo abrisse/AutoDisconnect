@@ -1,3 +1,14 @@
+autodisconnect (0.4) unstable; urgency=low
+
+  * New feature [#5732] : Switch 2G <-> 3G - Reporter : automagic68  
+  * New feature [#5700] : Do not disconnect when openvpn is running - Reporter : maddler
+  * New feature [#5738] : Do not disconnect when VoIP or an IM Account (Google Talk, Skype) is used
+  * New feature [#5221] : Control Panel Applet - Reporter : pillar
+
+  * Fix [#5733] : Bluetooth is disconnected when the FM Radio is used - Reporter DaSilva
+
+ -- Aymeric Brisse <aymeric.brisse@gmail.com>  Thu, 13 May 2010 22:12:31 +0200
+
 autodisconnect (0.3.1-2) unstable; urgency=low
 
   * Update Description

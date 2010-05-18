@@ -10,19 +10,12 @@ author "Aymeric Brisse"
 description "This init script starts the AutoDisconnect Bluetooth Checker"
 
 console none
-
-start on dummyevent
 start on started bluetoothd
 stop on stopping bluetoothd
 
 script	
-        exec /opt/autodisconnect/autodisconnect-bluetooth-check
+        exec su user -c "/opt/autodisconnect/autodisconnect-bluetooth-check &"
 end script
-
-#post-stop script
-#        Pid="`ps | egrep 'S[ ]*/bin/sh[ ]*/opt/autodisconnect/autodisconnect-bluetooth' | sed 's/^[ ]*\([0-9]*\) .*$/\1/g'`"
-#        [[ -n "$Pid" ]] && kill $Pid
-#end script
 
 
 

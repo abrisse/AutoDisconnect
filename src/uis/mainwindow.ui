@@ -64,7 +64,7 @@
      <enum>QTabWidget::North</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="elideMode">
      <enum>Qt::ElideMiddle</enum>
@@ -83,7 +83,7 @@
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
-      <string>Global</string>
+      <string>General</string>
      </attribute>
      <widget class="QCheckBox" name="chkNotifications">
       <property name="geometry">
@@ -146,7 +146,7 @@
        </font>
       </property>
       <property name="text">
-       <string>- When should AutoDisconnect be active ?</string>
+       <string>- When should AutoDisconnect be active?</string>
       </property>
      </widget>
      <widget class="QRadioButton" name="radioEnabledAlways">
@@ -219,20 +219,20 @@
        </font>
       </property>
       <property name="text">
-       <string>- Display notifications when AutoDisconnect is running / closing connections ?</string>
+       <string>- Display notifications about AutoDisconnect activity?</string>
       </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
-      <string>Network - Connections</string>
+      <string>Network</string>
      </attribute>
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>271</width>
+        <width>381</width>
         <height>60</height>
        </rect>
       </property>
@@ -249,7 +249,7 @@
        </font>
       </property>
       <property name="text">
-       <string>- Connections  to check ?</string>
+       <string>- Which connections to check?</string>
       </property>
      </widget>
      <widget class="QCheckBox" name="chkConnexionWLAN">
@@ -260,7 +260,7 @@
        <rect>
         <x>10</x>
         <y>70</y>
-        <width>141</width>
+        <width>131</width>
         <height>60</height>
        </rect>
       </property>
@@ -289,7 +289,7 @@
      <widget class="QCheckBox" name="chkConnexionGPRS">
       <property name="geometry">
        <rect>
-        <x>170</x>
+        <x>160</x>
         <y>70</y>
         <width>231</width>
         <height>60</height>
@@ -355,7 +355,7 @@
        </font>
       </property>
       <property name="text">
-       <string>- Do not close connections when the following services are running</string>
+       <string>- Do not close connections when the following services are running:</string>
       </property>
       <property name="textFormat">
        <enum>Qt::AutoText</enum>
@@ -364,44 +364,10 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QCheckBox" name="chkExceptionSSH">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>210</y>
-        <width>271</width>
-        <height>60</height>
-       </rect>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="font">
-       <font>
-        <family>Sans Serif</family>
-        <pointsize>15</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>SSH (client / server)</string>
-      </property>
-      <property name="checked">
-       <bool>false</bool>
-      </property>
-     </widget>
      <widget class="QLabel" name="label_17">
       <property name="geometry">
        <rect>
-        <x>470</x>
+        <x>450</x>
         <y>10</y>
         <width>191</width>
         <height>60</height>
@@ -420,7 +386,7 @@
        </font>
       </property>
       <property name="text">
-       <string>- Network Mode</string>
+       <string>- Network Mode:</string>
       </property>
       <property name="textFormat">
        <enum>Qt::AutoText</enum>
@@ -432,7 +398,7 @@
      <widget class="QCheckBox" name="chkUse2G">
       <property name="geometry">
        <rect>
-        <x>470</x>
+        <x>450</x>
         <y>70</y>
         <width>321</width>
         <height>60</height>
@@ -463,10 +429,146 @@
        <bool>false</bool>
       </property>
      </widget>
+     <widget class="QCheckBox" name="chkExceptionOpenVPN">
+      <property name="geometry">
+       <rect>
+        <x>390</x>
+        <y>210</y>
+        <width>186</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>OpenVPN</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkExceptionVoIP">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>210</y>
+        <width>131</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>VoIP</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkExceptionIMAccounts">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>210</y>
+        <width>211</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>IM Accounts</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkExceptionSSH">
+      <property name="geometry">
+       <rect>
+        <x>595</x>
+        <y>210</y>
+        <width>131</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>SSH</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_3">
      <attribute name="title">
-      <string>Network - Settings</string>
+      <string>Network - GPRS</string>
      </attribute>
      <widget class="QLabel" name="label">
       <property name="geometry">
@@ -484,7 +586,7 @@
        </font>
       </property>
       <property name="text">
-       <string>- How often will AutoDisconnect check your network connections ?</string>
+       <string>- How often to check your GPRS activity?</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_5">
@@ -525,7 +627,7 @@
        <string>Interval :</string>
       </property>
      </widget>
-     <widget class="QSpinBox" name="spinInterval">
+     <widget class="QSpinBox" name="spinIntervalGPRS">
       <property name="geometry">
        <rect>
         <x>130</x>
@@ -546,6 +648,9 @@
         <pointsize>15</pointsize>
        </font>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
       <property name="buttonSymbols">
        <enum>QAbstractSpinBox::PlusMinus</enum>
       </property>
@@ -565,7 +670,7 @@
        <number>5</number>
       </property>
      </widget>
-     <widget class="QSpinBox" name="spinMinBytes">
+     <widget class="QSpinBox" name="spinMinBytesGPRS">
       <property name="geometry">
        <rect>
         <x>130</x>
@@ -585,6 +690,9 @@
         <family>Sans Serif</family>
         <pointsize>15</pointsize>
        </font>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
       <property name="buttonSymbols">
        <enum>QAbstractSpinBox::PlusMinus</enum>
@@ -610,7 +718,7 @@
        <rect>
         <x>10</x>
         <y>145</y>
-        <width>721</width>
+        <width>781</width>
         <height>70</height>
        </rect>
       </property>
@@ -621,7 +729,7 @@
        </font>
       </property>
       <property name="text">
-       <string>- Starting when will AutoDisconnect consider your connection active ?</string>
+       <string>- What is the minimum traffic volume for your GPRS connection?</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_9">
@@ -640,7 +748,7 @@
        <string/>
       </property>
      </widget>
-     <widget class="QComboBox" name="unitList">
+     <widget class="QComboBox" name="unitListGPRS">
       <property name="geometry">
        <rect>
         <x>330</x>
@@ -675,6 +783,207 @@
       </item>
      </widget>
     </widget>
+    <widget class="QWidget" name="tab_5">
+     <attribute name="title">
+      <string>Network - Wifi</string>
+     </attribute>
+     <widget class="QLabel" name="label_11">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>70</y>
+        <width>141</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Interval :</string>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinMinBytesWifi">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>210</y>
+        <width>181</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="buttonSymbols">
+       <enum>QAbstractSpinBox::PlusMinus</enum>
+      </property>
+      <property name="accelerated">
+       <bool>true</bool>
+      </property>
+      <property name="minimum">
+       <number>1</number>
+      </property>
+      <property name="maximum">
+       <number>1023</number>
+      </property>
+      <property name="singleStep">
+       <number>1</number>
+      </property>
+      <property name="value">
+       <number>2</number>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="unitListWifi">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>215</y>
+        <width>121</width>
+        <height>50</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="frame">
+       <bool>false</bool>
+      </property>
+      <item>
+       <property name="text">
+        <string>  B/min</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>  KB/min</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>  MB/min</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QLabel" name="label_20">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>210</y>
+        <width>71</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Traffic :</string>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinIntervalWifi">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>70</y>
+        <width>260</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="buttonSymbols">
+       <enum>QAbstractSpinBox::PlusMinus</enum>
+      </property>
+      <property name="accelerated">
+       <bool>true</bool>
+      </property>
+      <property name="suffix">
+       <string> minutes</string>
+      </property>
+      <property name="minimum">
+       <number>1</number>
+      </property>
+      <property name="maximum">
+       <number>180</number>
+      </property>
+      <property name="value">
+       <number>5</number>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_21">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>145</y>
+        <width>781</width>
+        <height>70</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>- What is the minimum traffic volume for your Wifi connection?</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>691</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>- How often to check your Wifi activity?</string>
+      </property>
+     </widget>
+    </widget>
     <widget class="QWidget" name="tab_4">
      <attribute name="title">
       <string>Bluetooth - Settings</string>
@@ -695,7 +1004,7 @@
        </font>
       </property>
       <property name="text">
-       <string>- Disable the Bluetooth if no device is connected</string>
+       <string>- Disable Bluetooth if not in use?</string>
       </property>
      </widget>
      <widget class="QCheckBox" name="chkBluetooth">
@@ -748,6 +1057,9 @@
         <pointsize>15</pointsize>
        </font>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
       <property name="buttonSymbols">
        <enum>QAbstractSpinBox::PlusMinus</enum>
       </property>
@@ -758,13 +1070,13 @@
        <string> minutes</string>
       </property>
       <property name="minimum">
-       <number>1</number>
+       <number>10</number>
       </property>
       <property name="maximum">
        <number>180</number>
       </property>
       <property name="value">
-       <number>5</number>
+       <number>10</number>
       </property>
      </widget>
      <widget class="QLabel" name="label_16">
@@ -783,7 +1095,7 @@
        </font>
       </property>
       <property name="text">
-       <string>- How often will AutoDisconnect check your bluetooth status ?</string>
+       <string>- How often to check your Bluetooth activity?</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_18">

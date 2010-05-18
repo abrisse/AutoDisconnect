@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ash
 
 #
 # App : AutoDisconnect
@@ -19,6 +19,9 @@ readparameters()
     # Enable logging
     g_logging="true"
 
+    # Auto 2G Mode
+    g_use_2g="`gconftool-2 -g /apps/autodisconnect/param_use_2g`"
+
     # Where to store the logfile. This is cleared when it goes over 50k.
     logfile=/var/log/autodisconnect.log
 }
@@ -33,6 +36,15 @@ logentry()
     [[ "$g_logging" = "true" ]] && {
         echo -e "[`date +%T`][$$][Network] $1" >> $logfile
     }
+}
+
+# ---------------------------------------------------------------------------
+get_current_instance()
+# ---------------------------------------------------------------------------
+# Get Network Mode Flag
+#
+{
+    echo "`gconftool-2 --get /apps/autodisconnect/current_instance`"
 }
 
 # ---------------------------------------------------------------------------
@@ -57,6 +69,16 @@ switch_2G()
 }
 
 # ---------------------------------------------------------------------------
+disable_quit()
+# ---------------------------------------------------------------------------
+# Disabled if it is a reconnection
+#
+{
+    Pid=`gconftool-2 -g /apps/autodisconnect/instances`
+    test -z "`ps | egrep \"[ ]*$Pid\"`"
+}
+
+# ---------------------------------------------------------------------------
 main()
 # ---------------------------------------------------------------------------
 # Main entry point
@@ -65,8 +87,13 @@ main()
     # Read parameters
     readparameters
 
-    # Init
+    # Log
     logentry "<Start@>"
+
+    # Quit if it is a reconnection
+    if `disable_quit`; then
+        return 0
+    fi
 
     # Get the interface is not possible. See https://bugs.maemo.org/show_bug.cgi?id=7733
     # So it applies here for every interface
@@ -74,7 +101,12 @@ main()
     charging_status="`lshal -u '/org/freedesktop/Hal/devices/bme' | grep battery.rechargeable.is_charging | awk '{print $3}'`"
 
     if [[ $g_running_options != 2 -o $charging_status = false ]]; then
-      switch_2G
+        
+        # Switch back network mode to 2G if allowed
+        [[ $g_use_2g = true ]] && {
+            switch_2G
+        }
+
     fi 
 }
 
@@ -85,7 +117,11 @@ main()
 # Start AutoDisconnect
 
 g_running_options="`gconftool-2 -g /apps/autodisconnect/param_running_options`"
-[[ $g_running_options != 0 ]] && main && logentry "<Stop@>"
+
+if [[ "$g_running_options" != 0 ]]; then
+    main
+    logentry "<Stop@>"
+fi
 
 exit 0
 
