@@ -93,7 +93,7 @@ killsiblings()
     do
         [[ -n "$Pid" -a "$Pid" -ne "$$" ]] && {
             logentry "<Kill $Pid>"
-            kill -KILL $Pid
+            kill -KILL $Pid 2>/dev/null
         }
     done < $TmpFile
 }
@@ -170,8 +170,8 @@ disconnect()
         com.nokia.icd_ui.disconnect \
         boolean:true
 
-    # TODO : check
-    # sleep 2
+    # Waiting for any if-post-down.d to run
+    sleep 2
 }
 
 # ---------------------------------------------------------------------------
@@ -206,7 +206,7 @@ disable_quit()
         logentry "$interface started"
         false
     else
-        logentry "$interface ignored"
+        logentry "$interface ignored or gprs has been quickly closed"
         true
     fi
 }
@@ -220,11 +220,16 @@ switch_2G()
 {
     if [[ "`dbus-send --system --type=method_call --print-reply --dest=com.nokia.phone.net /com/nokia/phone/net Phone.Net.get_selected_radio_access_technology | awk '/b/ {print $2}'`" -ne 1 ]]; then
 
-        dbus-send --system --type=method_call \
-        --dest=com.nokia.phone.net /com/nokia/phone/net \
-        Phone.Net.set_selected_radio_access_technology byte:1
+        # Check if any call is active
+        if [[ -z "`dbus-send --type=method_call --print-reply --dest=org.freedesktop.Telepathy.ConnectionManager.ring /org/freedesktop/Telepathy/Connection/ring/tel/ring org.freedesktop.DBus.Properties.Get string:org.freedesktop.Telepathy.Connection.Interface.Requests string:Channels | grep /org/freedesktop/Telepathy/Connection/ring/tel/ring/`" ]]; then
 
-        logentry "switched to 2G"
+            dbus-send --system --type=method_call \
+                --dest=com.nokia.phone.net /com/nokia/phone/net \
+                Phone.Net.set_selected_radio_access_technology byte:1
+
+            logentry "switched to 2G"
+
+        fi
 
     fi
 }
@@ -276,7 +281,7 @@ main()
 
     # Quit if the interface doesn't have to be checked
     # Quit if the interface has been closed
-    if `disable_quit` || `connection_is_closed`; then
+    if `connection_is_closed` || `disable_quit`; then
         return 0
     fi
 

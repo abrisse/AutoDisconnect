@@ -8,6 +8,9 @@ autodisconnect (0.4) unstable; urgency=low
 
   * Fix [#5733] : Bluetooth is disconnected when the FM Radio is used - Reporter DaSilva
 
+  * Enhancement : Bluetooth manager has been updated and is not loaded anymore when not activated
+  * Change default settings & Others enhancements
+
  -- Aymeric Brisse <aymeric.brisse@gmail.com>  Thu, 13 May 2010 22:12:31 +0200
 
 autodisconnect (0.3.1-2) unstable; urgency=low

@@ -57,7 +57,7 @@ killsiblings()
     do
         [[ -n "$Pid" -a "$Pid" -ne "$$" ]] && {
             logentry "<Kill $Pid>"
-            kill -KILL $Pid
+            kill -KILL $Pid 2>/dev/null
         }
     done < $TmpFile
 }

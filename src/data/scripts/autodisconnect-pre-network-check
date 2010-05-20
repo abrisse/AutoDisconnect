@@ -45,16 +45,28 @@ switch_3G()
 #
 # No args
 {
+    # Allow dbus to work
+    [[ -e /tmp/dbus-info ]] && eval `cat /tmp/dbus-info`
+
+    export DBUS_SESSION_BUS_ADDRESS \
+           DBUS_SESSION_BUS_PID \
+           DBUS_SESSION_BUS_WINDOWID
+
     if [[ "`dbus-send --system --type=method_call --print-reply --dest=com.nokia.phone.net /com/nokia/phone/net Phone.Net.get_selected_radio_access_technology | awk '/b/ {print $2}'`" -eq 1 ]]; then
 
-        dbus-send --system --type=method_call \
-        --dest=com.nokia.phone.net /com/nokia/phone/net \
-        Phone.Net.set_selected_radio_access_technology byte:2
+        if [[ -z "`dbus-send --type=method_call --print-reply --dest=org.freedesktop.Telepathy.ConnectionManager.ring /org/freedesktop/Telepathy/Connection/ring/tel/ring org.freedesktop.DBus.Properties.Get string:org.freedesktop.Telepathy.Connection.Interface.Requests string:Channels | grep /org/freedesktop/Telepathy/Connection/ring/tel/ring/`" ]]; then
 
-        logentry "switched to 3G"
+            # Check if any call is active
+            dbus-send --system --type=method_call \
+                --dest=com.nokia.phone.net /com/nokia/phone/net \
+                Phone.Net.set_selected_radio_access_technology byte:2
 
-        # Wait 2 seconds for the interface to be again available
-        sleep 2
+            # Wait 3 seconds for the interface to be again available
+            sleep 3
+
+            logentry "switched to 3G"  
+
+        fi
 
     fi
 }

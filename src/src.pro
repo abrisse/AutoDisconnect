@@ -26,12 +26,6 @@ QT = core gui maemo5
 		
 INSTALLS += target
 target.path = $$(DESTDIR)/opt/autodisconnect
-INSTALLS += desktop
-desktop.path = $$(DESTDIR)/usr/share/applications/hildon
-desktop.files = data/autodisconnect.desktop
-INSTALLS += service
-service.path = $$(DESTDIR)/usr/share/dbus-1/services
-service.files = data/autodisconnect.service
 INSTALLS += icon64
 icon64.path = $$(DESTDIR)/usr/share/icons/hicolor/64x64/apps
 icon64.files = data/64x64/autodisconnect.png

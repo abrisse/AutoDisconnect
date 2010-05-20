@@ -54,16 +54,25 @@ switch_2G()
 #
 # No args
 {
+    # Allow dbus to work
+    [[ -e /tmp/dbus-info ]] && eval `cat /tmp/dbus-info`
+
+    export DBUS_SESSION_BUS_ADDRESS \
+           DBUS_SESSION_BUS_PID \
+           DBUS_SESSION_BUS_WINDOWID
+
     if [[ "`dbus-send --system --type=method_call --print-reply --dest=com.nokia.phone.net /com/nokia/phone/net Phone.Net.get_selected_radio_access_technology | awk '/b/ {print $2}'`" -ne 1 ]]; then
 
-        dbus-send --system --type=method_call \
-        --dest=com.nokia.phone.net /com/nokia/phone/net \
-        Phone.Net.set_selected_radio_access_technology byte:1
+        # Check if any call is active
+        if [[ -z "`dbus-send --type=method_call --print-reply --dest=org.freedesktop.Telepathy.ConnectionManager.ring /org/freedesktop/Telepathy/Connection/ring/tel/ring org.freedesktop.DBus.Properties.Get string:org.freedesktop.Telepathy.Connection.Interface.Requests string:Channels | grep /org/freedesktop/Telepathy/Connection/ring/tel/ring/`" ]]; then
 
-        logentry "switched to 2G"
+            dbus-send --system --type=method_call \
+                --dest=com.nokia.phone.net /com/nokia/phone/net \
+                Phone.Net.set_selected_radio_access_technology byte:1
 
-        # Wait 2 seconds for the interface to be again available
-        sleep 2
+            logentry "switched to 2G"
+
+        fi
 
     fi
 }
@@ -74,8 +83,8 @@ disable_quit()
 # Disabled if it is a reconnection
 #
 {
-    Pid=`gconftool-2 -g /apps/autodisconnect/instances`
-    test -z "`ps | egrep \"[ ]*$Pid\"`"
+    Pid=`gconftool-2 -g /apps/autodisconnect/current_instance`
+    test -z "`ps | egrep \"[ ]*$Pid.*/opt/autodisconnect/autodisconnect-network\"`"
 }
 
 # ---------------------------------------------------------------------------
