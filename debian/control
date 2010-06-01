@@ -2,15 +2,15 @@ Source: autodisconnect
 Section: user/network
 Priority: extra
 Maintainer: Aymeric Brisse <aymeric.brisse@gmail.com>
-Build-Depends: debhelper (>= 5), libgtk2.0-dev, libqt4-maemo5-dev, libgconf2-dev, libosso-dev
+Build-Depends: debhelper (>= 5), libgtk2.0-dev, libqt4-dev, libgconf2-dev, libosso-dev, hildon-control-panel-dev
 Standards-Version: 3.7.2
 Homepage: http://github.com/abrisse/AutoDisconnect
 
 Package: autodisconnect
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Automatically closes your idle connections (Wifi + 3G/GPRS + Bluetooth) in order for your batteries to last much longer if like me you have automatic synchronizations.
- To manage the application, you can launch the program 'AutoDisconnect' which will be added in your application menu.
+Description: Automatically closes your idle connections (Wifi + 3G/GPRS + Bluetooth) and switches the network mode of your phone (use 2G when 3G is not required by connection) in order for your batteries to last much longer.
+ To manage the application, an icon 'AutoDisconnect' is available in Settings > Connectivity.
 XSBC-Bugtracker: https://garage.maemo.org/tracker/?atid=5016&group_id=1353&func=browse
 XB-Maemo-Upgrade-Description: Fixed Bluetooth feature.
 XSBC-Maemo-Display-Name: AutoDisconnect

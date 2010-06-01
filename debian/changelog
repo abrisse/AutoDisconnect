@@ -1,3 +1,15 @@
+autodisconnect (0.4-2) unstable; urgency=low
+
+  * Use of PR 1.2 Qt libraries
+
+ -- Aymeric Brisse <aymeric.brisse@gmail.com>  Tue,  1 Jun 2010 17:43:13 +0200
+
+autodisconnect (0.4-1) unstable; urgency=low
+
+  * Fix Installer
+
+ -- Aymeric Brisse <aymeric.brisse@gmail.com>  Thu, 20 May 2010 04:37:46 +0200
+
 autodisconnect (0.4) unstable; urgency=low
 
   * New feature [#5732] : Switch 2G <-> 3G - Reporter : automagic68  
