@@ -3,7 +3,7 @@
 #
 # App : AutoDisconnect
 # Url : https://garage.maemo.org/projects/autodisconnect/
-# Version: 0.4
+# Version: 0.4.5
 # Author: Aymeric Brisse <aymeric.brisse@gmail.com>
 # License: GNU General Public License
 #
@@ -34,17 +34,8 @@ logentry()
 # Arg 1 - The text to log
 {
     [[ "$g_logging" = "true" ]] && {
-        echo -e "[`date +%T`][$$][Network] $1" >> $logfile
+        echo -e "[`date +%T`][$$][$interface] $1" >> $logfile
     }
-}
-
-# ---------------------------------------------------------------------------
-get_current_instance()
-# ---------------------------------------------------------------------------
-# Get Network Mode Flag
-#
-{
-    echo "`gconftool-2 --get /apps/autodisconnect/current_instance`"
 }
 
 # ---------------------------------------------------------------------------
@@ -78,16 +69,6 @@ switch_2G()
 }
 
 # ---------------------------------------------------------------------------
-disable_quit()
-# ---------------------------------------------------------------------------
-# Disabled if it is a reconnection
-#
-{
-    Pid=`gconftool-2 -g /apps/autodisconnect/current_instance`
-    test -z "`ps | egrep \"[ ]*$Pid.*/opt/autodisconnect/autodisconnect-network\"`"
-}
-
-# ---------------------------------------------------------------------------
 main()
 # ---------------------------------------------------------------------------
 # Main entry point
@@ -96,27 +77,21 @@ main()
     # Read parameters
     readparameters
 
+    # Get interface
+    interface="$ICD_CONNECTION_TYPE"
+
     # Log
-    logentry "<Start@>"
+    logentry "<post-down-start>"	    
 
-    # Quit if it is a reconnection
-    if `disable_quit`; then
-        return 0
-    fi
-
-    # Get the interface is not possible. See https://bugs.maemo.org/show_bug.cgi?id=7733
-    # So it applies here for every interface
-
-    charging_status="`lshal -u '/org/freedesktop/Hal/devices/bme' | grep battery.rechargeable.is_charging | awk '{print $3}'`"
-
-    if [[ $g_running_options != 2 -o $charging_status = false ]]; then
+    #charging_status="`lshal -u '/org/freedesktop/Hal/devices/bme' | grep battery.rechargeable.is_charging | awk '{print $3}'`"
+    #if [[ $g_running_options != 2 -o $charging_status = false ]]; then
         
         # Switch back network mode to 2G if allowed
-        [[ $g_use_2g = true ]] && {
+        [[ "$g_idle_network_mode_type" != "none" -a "$interface" = "GPRS" ]] && {
             switch_2G
         }
 
-    fi 
+    #fi 
 }
 
 # ---------------------------------------------------------------------------
@@ -127,10 +102,10 @@ main()
 
 g_running_options="`gconftool-2 -g /apps/autodisconnect/param_running_options`"
 
-if [[ "$g_running_options" != 0 ]]; then
+#if [[ "$g_running_options" != 0 ]]; then
     main
-    logentry "<Stop@>"
-fi
+    logentry "<post-down-stop>"
+#fi
 
 exit 0
 

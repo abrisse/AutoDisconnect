@@ -1,5 +1,5 @@
 /*
-@version: 0.4
+@version: 0.4.5
 @author: Aymeric Brisse <aymeric.brisse@gmail.com>
 @license: GNU General Public License
 */
@@ -29,6 +29,7 @@ public:
   static void Unload();
   static void SetBoolean(QString key, bool value);
   static void SetInteger(QString key, int value);
+  static void SetString(QString key, QString value);
   static bool GetBoolean(QString key);
   static int GetInteger(QString key);
   static QString GetString(QString key);

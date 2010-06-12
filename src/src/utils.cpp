@@ -1,5 +1,5 @@
 /*
-@version: 0.4
+@version: 0.4.5
 @author: Aymeric Brisse <aymeric.brisse@gmail.com>
 @license: GNU General Public License
 */
@@ -63,6 +63,17 @@ void Utils::SetBoolean(QString key, bool value)
 }
 
 /**
+ * Store a string value
+ */
+void Utils::SetString(QString key, QString value)
+{
+  key = GC_ROOT + key;
+
+  if(!gconf_client_set_string(gconfClient, key.toStdString().c_str(), value.toStdString().c_str(), NULL))
+    g_warning("failed to set key\n");
+}
+
+/**
  * Get a boolean value
  */
 bool Utils::GetBoolean(QString key)
@@ -107,7 +118,7 @@ int Utils::GetInteger(QString key)
 }
 
 /**
- * Get an string value
+ * Get a string value
  */
 QString Utils::GetString(QString key)
 {

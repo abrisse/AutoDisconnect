@@ -1,5 +1,5 @@
 /*
-@version: 0.4
+@version: 0.4.5
 @author: Aymeric Brisse <aymeric.brisse@gmail.com>
 @license: GNU General Public License
 */
@@ -51,23 +51,46 @@ void MainWindow::on_btnAbout_clicked()
 void MainWindow::saveValues()
 {
   int coeff;
-  int running_options;
 
   /* General */
-  if (ui->radioEnabledAlways->isChecked())
-    running_options = 1;
-  else if (ui->radioEnabledNotCharging->isChecked())
-    running_options = 2;
-  else
-    running_options = 0;
 
-  Utils::SetInteger("param_running_options",  running_options);
+  /*
+    0 : never
+    1 : always
+    2 : when not charging
+    3 : when locked
+    4 : when not charging AND locked
+  */
+
+  Utils::SetInteger("param_running_options",  ui->enabledList->currentIndex());
   Utils::SetBoolean("param_notifications",  ui->chkNotifications->checkState());
 
   /* Network */
+  QString idle_network_infos = ui->networkModeList->currentText();
+  QString idle_network_type;
+  int idle_network_duration;
+
+  if (idle_network_infos.contains("3G"))
+  {
+    idle_network_type = "3g";
+    idle_network_duration = idle_network_infos.mid(idle_network_infos.length()-3, 1).toInt();
+  }
+  else if (idle_network_infos.contains("Dual"))
+  {
+    idle_network_type = "dual";
+    idle_network_duration = idle_network_infos.mid(idle_network_infos.length()-3, 1).toInt();
+  }
+  else
+  {
+    idle_network_type = "none";
+    idle_network_duration = 0;
+  }
+
+  Utils::SetString("param_idle_network_mode_type", idle_network_type);
+  Utils::SetInteger("param_idle_network_mode_duration", idle_network_duration);
+
   Utils::SetBoolean("param_connection_wlan", ui->chkConnexionWLAN->checkState());
   Utils::SetBoolean("param_connection_gprs", ui->chkConnexionGPRS->checkState());
-  Utils::SetBoolean("param_use_2g", ui->chkUse2G->checkState());
 
   Utils::SetBoolean("param_exception_ssh", ui->chkExceptionSSH->checkState());
   Utils::SetBoolean("param_exception_openvpn", ui->chkExceptionOpenVPN->checkState());
@@ -89,6 +112,7 @@ void MainWindow::saveValues()
   }
 
   Utils::SetInteger("param_gprs_interval", ui->spinIntervalGPRS->value());
+  Utils::SetInteger("param_gprs_pre_interval", ui->spinPreIntervalGPRS->value());
   Utils::SetInteger("param_gprs_traffic", ui->spinMinBytesGPRS->value()*coeff);
 
   /* Network WLAN - Parameters */
@@ -106,6 +130,7 @@ void MainWindow::saveValues()
   }
 
   Utils::SetInteger("param_wlan_interval", ui->spinIntervalWLAN->value());
+  Utils::SetInteger("param_wlan_pre_interval", ui->spinPreIntervalWLAN->value());
   Utils::SetInteger("param_wlan_traffic", ui->spinMinBytesWLAN->value()*coeff);
 
   /* Bluetooth */
@@ -129,22 +154,8 @@ void MainWindow::loadValues()
   this->setWindowTitle(version);
   ui->label_version->setText(version);
 
-  /* General */
-  int running_options = Utils::GetInteger("param_running_options");
-
-  switch(running_options)
-  {
-  case 0:
-    ui->radioEnabledNever->setChecked(true);
-    break;
-  case 1:
-    ui->radioEnabledAlways->setChecked(true);
-    break;
-  case 2:
-    ui->radioEnabledNotCharging->setChecked(true);
-    break;
-  }
-
+  /* General */  
+  ui->enabledList->setCurrentIndex(Utils::GetInteger("param_running_options"));
   ui->chkNotifications->setChecked(Utils::GetBoolean("param_notifications"));
 
   /* Network - GPRS */
@@ -171,6 +182,7 @@ void MainWindow::loadValues()
   ui->spinMinBytesGPRS->setValue(traffic_value);
   ui->unitListGPRS->setCurrentIndex(unit_index);
   ui->spinIntervalGPRS->setValue(Utils::GetInteger("param_gprs_interval"));
+  ui->spinPreIntervalGPRS->setValue(Utils::GetInteger("param_gprs_pre_interval"));
 
   /* Network - WLAN */
   min_bytes = Utils::GetInteger("param_wlan_traffic");
@@ -194,11 +206,27 @@ void MainWindow::loadValues()
   ui->spinMinBytesWLAN->setValue(traffic_value);
   ui->unitListWLAN->setCurrentIndex(unit_index);
   ui->spinIntervalWLAN->setValue(Utils::GetInteger("param_wlan_interval"));
+  ui->spinPreIntervalWLAN->setValue(Utils::GetInteger("param_wlan_pre_interval"));
 
   /* Network */
+  QString idle_network_type = Utils::GetString("param_idle_network_mode_type");
+  int idle_network_duration = Utils::GetInteger("param_idle_network_mode_duration");
+
+  if (idle_network_type == "none")
+  {
+    ui->networkModeList->setCurrentIndex(0);
+  }
+  else if (idle_network_type == "3g")
+  {    
+    ui->networkModeList->setCurrentIndex(ui->networkModeList->findText(QString("   3G - Switch last ") + QString::number(idle_network_duration) + "''", Qt::MatchExactly));
+  }
+  else if (idle_network_type == "dual")
+  {
+    ui->networkModeList->setCurrentIndex(ui->networkModeList->findText(QString("   Dual - Switch last ") + QString::number(idle_network_duration) + "''", Qt::MatchExactly));
+  }
+
   ui->chkConnexionWLAN->setChecked(Utils::GetBoolean("param_connection_wlan"));
   ui->chkConnexionGPRS->setChecked(Utils::GetBoolean("param_connection_gprs"));  
-  ui->chkUse2G->setChecked(Utils::GetBoolean("param_use_2g"));
 
   ui->chkExceptionSSH->setChecked(Utils::GetBoolean("param_exception_ssh"));
   ui->chkExceptionOpenVPN->setChecked(Utils::GetBoolean("param_exception_openvpn"));
@@ -215,8 +243,8 @@ void MainWindow::loadValues()
  */
 void MainWindow::about()
 {
-  QString aboutText = "\nAutoDisconnect is an application which makes your batteries last much longer by closing your idle connections (Wifi + 3G/GPRS + Bluetooth)";
-  aboutText += " and by switching to 2G when 3G is not required. You can custom a lot of parameters.\n\n";
+  QString aboutText = "\nAutoDisconnect is an application which closes your idle connections (Wifi + 3G/GPRS + Bluetooth)";
+  aboutText += " and switches to 2G when 3G is not used, in order for your batteries to last much longer. You can get more information on http://wiki.maemo.org/AutoDisconnect.\n\n";
   aboutText += "Written by Aymeric Brisse - aymeric.brisse@gmail.com\n";
   QMessageBox::about(this, "About", aboutText);
 }

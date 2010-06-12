@@ -6,9 +6,9 @@ CONFIG += plugin link_pkgconfig
 PKGCONFIG += gtk+-2.0 libosso
 
 INSTALLS += target
-#target.path = $$(DESTDIR)/usr/lib/hildon-control-panel
+#$$(DESTDIR)/usr/lib/hildon-control-panel
 target.path = $$(DESTDIR)$$system(pkg-config hildon-control-panel --variable=pluginlibdir)
 INSTALLS += desktop
-#desktop.path = $$(DESTDIR)/usr/share/applications/hildon-control-panel
+#$$(DESTDIR)/usr/share/applications/hildon-control-panel
 desktop.path = $$(DESTDIR)$$system(pkg-config hildon-control-panel --variable=plugindesktopentrydir)
 desktop.files = data/autodisconnect.desktop

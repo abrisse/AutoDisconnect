@@ -32,6 +32,9 @@ case "$1" in
         [[ -z "`gconftool-2 --get /apps/autodisconnect/param_gprs_interval 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_gprs_interval --type int "$val"
         [[ -z "`gconftool-2 --get /apps/autodisconnect/param_wlan_interval 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_wlan_interval --type int "$val"
 
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_gprs_pre_interval 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_gprs_pre_interval --type int 30
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_wlan_pre_interval 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_wlan_pre_interval --type int 30
+
         val="`gconftool-2 --get /apps/autodisconnect/param_min_bytes 2>/dev/null`" # AutoDisconnect < v.0.3 settings
         if [[ -z "$val" ]]; then
             val=2048
@@ -46,9 +49,21 @@ case "$1" in
         [[ -z "`gconftool-2 --get /apps/autodisconnect/param_exception_openvpn 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_exception_openvpn --type bool true
         [[ -z "`gconftool-2 --get /apps/autodisconnect/param_exception_voip 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_exception_voip --type bool true
         [[ -z "`gconftool-2 --get /apps/autodisconnect/param_exception_im_accounts 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_exception_im_accounts --type bool true
-        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_connection_wlan 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_connection_wlan --type bool true
+        [[ -z "`gconftool-2 --get /apps/autodisconnesct/param_connection_wlan 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_connection_wlan --type bool true
         [[ -z "`gconftool-2 --get /apps/autodisconnect/param_connection_gprs 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_connection_gprs --type bool true
-        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_use_2g 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_use_2g --type bool false
+        
+        # Idle Network Mode
+        if [[ "`gconftool-2 --get /apps/autodisconnect/param_use_2g 2>/dev/null`" = true ]]; then # AutoDisconnect < v.0.4.5 settings
+            val="3g"
+            val_duration=3
+            gconftool-2 --unset /apps/autodisconnect/param_use_2g
+        else
+            val="none"
+            val_duration=0
+        fi
+
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_idle_network_mode_type 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_idle_network_mode_type --type string "$val"
+        [[ -z "`gconftool-2 --get /apps/autodisconnect/param_idle_network_mode_duration 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_idle_network_mode_duration --type int "$val_duration"
 
         # Bluetooth
         [[ -z "`gconftool-2 --get /apps/autodisconnect/param_bluetooth_enable 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_bluetooth_enable --type bool false
@@ -64,8 +79,8 @@ case "$1" in
         [[ -z "`gconftool-2 --get /apps/autodisconnect/param_running_options 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_running_options --type int 1
         [[ -z "`gconftool-2 --get /apps/autodisconnect/param_notifications 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/param_notifications --type bool false
 
-        # Instance
-        [[ -z "`gconftool-2 --get /apps/autodisconnect/current_instance 2>/dev/null`" ]] && gconftool-2 --set /apps/autodisconnect/current_instance --type int 0
+        # Remove AutoDisconnect < v.0.4.5 settings
+        [[ -n "`gconftool-2 --get /apps/autodisconnect/current_instance 2>/dev/null`" ]] && gconftool-2 --unset /apps/autodisconnect/current_instance
 
         # Version
         gconftool-2 --set /apps/autodisconnect/version --type string "`dpkg -l autodisconnect | grep autodisconnect | awk '{print $3}'`"

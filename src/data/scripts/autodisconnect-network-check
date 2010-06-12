@@ -3,7 +3,7 @@
 #
 # App : AutoDisconnect
 # Url : https://garage.maemo.org/projects/autodisconnect/
-# Version: 0.4
+# Version: 0.4.5
 # Author: Aymeric Brisse <aymeric.brisse@gmail.com>
 # License: GNU General Public License
 #
@@ -69,6 +69,9 @@ read_connection_parameters()
     # How often to test for inactivity (min)
     g_samplerate=`getvalue $short_interface"_interval"`
 
+    # Grace Period (sec)
+    g_pre_interval=`getvalue $short_interface"_pre_interval"`
+
     # Number of bytes allowed to be received without disconnect
     g_dontcountbytespermin=`getvalue $short_interface"_traffic"`
     
@@ -102,8 +105,14 @@ killsiblings()
 init()
 # ---------------------------------------------------------------------------
 {
+    # Don't let log file get too big
+    if [[ -w "$logfile" ]]; then
+        size=`stat $logfile | grep Size | awk '{ print $2; }'`
+        [[ "$size" -gt 50000 ]] && :>$logfile
+    fi
+
     # Log
-    logentry "<Start>"  
+    logentry "<if-up-start>"  
 
     # Kill every instances already running
     killsiblings
@@ -113,23 +122,7 @@ init()
 
     export DBUS_SESSION_BUS_ADDRESS \
            DBUS_SESSION_BUS_PID \
-           DBUS_SESSION_BUS_WINDOWID
-
-    # Don't let log file get too big
-    if [[ -w "$logfile" ]]; then
-        size=`stat $logfile | grep Size | awk '{ print $2; }'`
-        [[ "$size" -gt 50000 ]] && :>$logfile
-    fi
-
-    # Waiting for any if-post-down.d script if reconnection
-    sleep 5
-
-    # Register
-    set_current_instance
-
-    # Waiting for possible closing connections
-    # Waiting for initial traffic to be made -> then the next check will close the connection if idle
-    sleep 20
+           DBUS_SESSION_BUS_WINDOWID    
 }
 
 # ---------------------------------------------------------------------------
@@ -140,7 +133,7 @@ logentry()
 # Arg 1 - The text to log
 {
     [[ "$g_logging" = true ]] && {
-        echo -e "[`date +%T`][$$][Network] $1" >> $logfile
+        echo -e "[`date +%T`][$$][$interface] $1" >> $logfile
     }
 }
 
@@ -169,9 +162,6 @@ disconnect()
         /com/nokia/icd_ui \
         com.nokia.icd_ui.disconnect \
         boolean:true
-
-    # Waiting for any if-post-down.d to run
-    sleep 2
 }
 
 # ---------------------------------------------------------------------------
@@ -185,15 +175,6 @@ isrunning()
 }
 
 # ---------------------------------------------------------------------------
-set_current_instance()
-# ---------------------------------------------------------------------------
-# Register the current PID
-#
-{
-    gconftool-2 --set --type int /apps/autodisconnect/current_instance $$
-}
-
-# ---------------------------------------------------------------------------
 disable_quit()
 # ---------------------------------------------------------------------------
 # Disabled for some interfaces
@@ -202,35 +183,12 @@ disable_quit()
     connection_check=`echo "$g_enable" | grep "$short_interface" 2>/dev/null`
     
     if [[ -n "$short_interface" -a -n "$connection_check" ]]; then
-        osnotify "AutoDisconnect is now running"
-        logentry "$interface started"
+        osnotify "AutoDisconnect is now checking $interface"
+        logentry "interface started"
         false
     else
-        logentry "$interface ignored or gprs has been quickly closed"
+        logentry "interface ignored"
         true
-    fi
-}
-
-# ---------------------------------------------------------------------------
-switch_2G()
-# ---------------------------------------------------------------------------
-# Switch network mode to 2G
-#
-# No args
-{
-    if [[ "`dbus-send --system --type=method_call --print-reply --dest=com.nokia.phone.net /com/nokia/phone/net Phone.Net.get_selected_radio_access_technology | awk '/b/ {print $2}'`" -ne 1 ]]; then
-
-        # Check if any call is active
-        if [[ -z "`dbus-send --type=method_call --print-reply --dest=org.freedesktop.Telepathy.ConnectionManager.ring /org/freedesktop/Telepathy/Connection/ring/tel/ring org.freedesktop.DBus.Properties.Get string:org.freedesktop.Telepathy.Connection.Interface.Requests string:Channels | grep /org/freedesktop/Telepathy/Connection/ring/tel/ring/`" ]]; then
-
-            dbus-send --system --type=method_call \
-                --dest=com.nokia.phone.net /com/nokia/phone/net \
-                Phone.Net.set_selected_radio_access_technology byte:1
-
-            logentry "switched to 2G"
-
-        fi
-
     fi
 }
 
@@ -241,10 +199,10 @@ connection_is_closed()
 #
 # No args
 {
-    interface_check="`grep $interface /proc/net/route | tail -1 | cut -f1`"
+    interface_check="`grep $network_interface /proc/net/route | tail -1 | cut -f1`"
 
     if [[ -z "$interface_check" ]]; then
-        logentry "$interface closed (externally)"
+        logentry "interface closed (externally)"
         true
     else
         false
@@ -260,35 +218,32 @@ main()
     # Read general parameters
     read_parameters
 
-    # Init -> Kill other instances & dbus & log & sleep
+    # Get interface
+    interface="$ICD_CONNECTION_TYPE"
+    short_interface="`echo $interface | awk -F"_" '{print tolower($1)}'`"
+    network_interface="$short_interface"0
+
+    # Init -> Kill other instances & dbus & log
     init
 
-    # Get interface
-        
-    interface=$IFACE
-    
-    if [[ -z "$interface" ]]; then
-        # gprs0 generally. See https://bugs.maemo.org/show_bug.cgi?id=7733
-        interface="`grep gprs0 /proc/net/route | tail -1 | cut -f1`"
-    fi
-
-    short_interface=`echo "$interface" | tr -d 0-9`
-
-    # Switch network mode back to 2G if wlan
-    [[ "$short_interface" = "wlan" -a $g_use_2g = true ]] && {
-        switch_2G
-    }
-
     # Quit if the interface doesn't have to be checked
-    # Quit if the interface has been closed
-    if `connection_is_closed` || `disable_quit`; then
+    if `disable_quit`; then
         return 0
     fi
 
     # Read connection specific parameters
     read_connection_parameters
     
-    packets_before="`grep $interface /proc/net/dev | awk -F":" '{print $2}' | awk '{print $1}'`"
+    # Waiting for possible closing connections
+    # Waiting for initial traffic to be made -> then the next check will close the connection if idle
+    sleep $g_pre_interval
+
+    # Quit if the interface has been closed
+    if `connection_is_closed`; then
+        return 0
+    fi
+    
+    packets_before="`grep $network_interface /proc/net/dev | awk -F":" '{print $2}' | awk '{print $1}'`"
     
     # MONITORING LOOP
     while true
@@ -302,14 +257,31 @@ main()
 
         exception_apply=""
 
+        # Running options
+        # -------------------------------------
+        # 0 : never
+        # 1 : always
+        # 2 : when not charging
+        # 3 : when locked
+        # 4 : when not charging AND locked
+
         # Check if the phone is charging
-        if [[ "$g_running_options" = 2 -a "`lshal -u '/org/freedesktop/Hal/devices/bme' | grep battery.rechargeable.is_charging | awk '{print $3}'`" = true ]]; then
-            exception_apply="phone_charging"
+        if [[ "$g_running_options" = 2 -o "$g_running_options" = 4 ]]; then
+            if [[ "`lshal -u '/org/freedesktop/Hal/devices/bme' | grep battery.rechargeable.is_charging | awk '{print $3}'`" = true ]]; then
+                exception_apply="phone_charging"
+            fi
+        fi
+
+        # Check if the phone is locked
+        if [[ "$g_running_options" = 3 -o "$g_running_options" = 4 ]]; then
+            if [[ -n "`dbus-send --system --print-reply --type=method_call --dest=com.nokia.mce /com/nokia/mce/request com.nokia.mce.request.get_tklock_mode | tail -n 1 | grep unlocked`" ]]; then
+                exception_apply="phone_unlocked"
+            fi
         fi
 
         # Check if no exception service is running
         if [[ -z "$exception_apply" -a -n "$g_exceptions" ]]; then
-            my_ip="`ifconfig "$interface" | grep "inet addr" | sed 's/^[ ]*inet addr:\([0-9\.]*\) .*$/\1/g'`"
+            my_ip="`ifconfig "$network_interface" | grep "inet addr" | sed 's/^[ ]*inet addr:\([0-9\.]*\) .*$/\1/g'`"
             for exception in $g_exceptions ; do
                 [[ -n "`netstat | grep :$exception | grep ESTABLISHED | grep $my_ip`" ]] && {
                     exception_apply="$exception"
@@ -339,20 +311,20 @@ main()
         # Log exception
 
         if [[ -n "$exception_apply" ]]; then
-            logentry "$interface checked ($exception_apply)"
+            logentry "interface checked ($exception_apply)"
             continue
         fi
         
         # Check the traffic volume
-        packets_after="`grep $interface /proc/net/dev | awk -F":" '{print $2}' | awk '{print $1}'`"
+        packets_after="`grep $network_interface /proc/net/dev | awk -F":" '{print $2}' | awk '{print $1}'`"
 
         if [[ "$packets_after" -lt "$((packets_before+g_dontcountbytes))" ]]; then
-            osnotify "AutoDisconnect has closed the inactive connection"
-            logentry "$interface closed (inactive) +$((packets_after-packets_before))"            
+            osnotify "AutoDisconnect has closed $interface (inactive)"
+            logentry "interface closed (inactive) +$((packets_after-packets_before))"            
             disconnect            
             break
         else            
-            logentry "$interface checked (+$((packets_after-packets_before)))"
+            logentry "interface checked (+$((packets_after-packets_before)))"
             packets_before=$packets_after   
         fi
 
@@ -370,7 +342,7 @@ g_running_options=`getvalue "running_options"`
 
 if [[ "$g_running_options" != 0 ]]; then
     main
-    logentry "<Stop>"
+    logentry "<if-up-stop>"
 fi
 
 exit 0

@@ -3,7 +3,7 @@
 #
 # App : AutoDisconnect
 # Url : https://garage.maemo.org/projects/autodisconnect/
-# Version: 0.4
+# Version: 0.4.5
 # Author: Aymeric Brisse <aymeric.brisse@gmail.com>
 # License: GNU General Public License
 #
@@ -20,7 +20,8 @@ readparameters()
     g_logging=true
 
     # Auto 2G Mode
-    g_use_2g="`gconftool-2 -g /apps/autodisconnect/param_use_2g`"
+    g_idle_network_mode_type="`gconftool-2 -g /apps/autodisconnect/param_idle_network_mode_type`"
+    g_idle_network_mode_duration="`gconftool-2 -g /apps/autodisconnect/param_idle_network_mode_duration`"
 
     # Where to store the logfile. This is cleared when it goes over 50k.
     logfile=/var/log/autodisconnect.log
@@ -34,7 +35,7 @@ logentry()
 # Arg 1 - The text to log
 {
     [[ "$g_logging" = true ]] && {
-        echo -e "[`date +%T`][$$][Network] $1" >> $logfile
+        echo -e "[`date +%T`][$$][$interface] $1" >> $logfile
     }
 }
 
@@ -54,17 +55,23 @@ switch_3G()
 
     if [[ "`dbus-send --system --type=method_call --print-reply --dest=com.nokia.phone.net /com/nokia/phone/net Phone.Net.get_selected_radio_access_technology | awk '/b/ {print $2}'`" -eq 1 ]]; then
 
+        # Check if any call is active
         if [[ -z "`dbus-send --type=method_call --print-reply --dest=org.freedesktop.Telepathy.ConnectionManager.ring /org/freedesktop/Telepathy/Connection/ring/tel/ring org.freedesktop.DBus.Properties.Get string:org.freedesktop.Telepathy.Connection.Interface.Requests string:Channels | grep /org/freedesktop/Telepathy/Connection/ring/tel/ring/`" ]]; then
 
-            # Check if any call is active
+            if [[ "$g_idle_network_mode_type" = "3g" ]]; then
+                network_mode_id=2
+            else
+                network_mode_id=0
+            fi
+            
             dbus-send --system --type=method_call \
                 --dest=com.nokia.phone.net /com/nokia/phone/net \
-                Phone.Net.set_selected_radio_access_technology byte:2
+                Phone.Net.set_selected_radio_access_technology byte:$network_mode_id
 
-            # Wait 3 seconds for the interface to be again available
-            sleep 3
+            # Wait for the interface to be again available
+            sleep $g_idle_network_mode_duration
 
-            logentry "switched to 3G"  
+            logentry "switched to $g_idle_network_mode_type mode"  
 
         fi
 
@@ -80,21 +87,20 @@ main()
     # Read parameters
     readparameters
 
+    # Get interface
+    interface="$ICD_CONNECTION_TYPE"
+
     # Log
-    logentry "<@Start>"
+    logentry "<pre-if-up-start>"
 
-    # Get the interface is not possible. See https://bugs.maemo.org/show_bug.cgi?id=7733
-    # So it applies here for every interface
-
-    charging_status="`lshal -u '/org/freedesktop/Hal/devices/bme' | grep battery.rechargeable.is_charging | awk '{print $3}'`"
-
-    if [[ "$g_running_options" != 2 -o "$charging_status" = false ]]; then
+    #charging_status="`lshal -u '/org/freedesktop/Hal/devices/bme' | grep battery.rechargeable.is_charging | awk '{print $3}'`"
+    #if [[ "$g_running_options" != 2 -o "$charging_status" = false ]]; then
         
         # Switch network mode to 3G if allowed
-        [[ "$g_use_2g" = true ]] && {
+        [[ "$g_idle_network_mode_type" != "none" -a "$interface" = "GPRS" ]] && {
             switch_3G
         }
-    fi 
+    #fi 
 }
 
 # ---------------------------------------------------------------------------
@@ -105,10 +111,10 @@ main()
 
 g_running_options="`gconftool-2 -g /apps/autodisconnect/param_running_options`"
 
-if [[ "$g_running_options" != 0 ]]; then
+#if [[ "$g_running_options" != 0 ]]; then
     main
-    logentry "<@Stop>"
-fi
+    logentry "<pre-if-up-stop>"
+#fi
 
 exit 0
 

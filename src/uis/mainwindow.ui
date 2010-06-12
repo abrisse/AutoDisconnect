@@ -67,7 +67,7 @@
      <number>0</number>
     </property>
     <property name="elideMode">
-     <enum>Qt::ElideMiddle</enum>
+     <enum>Qt::ElideNone</enum>
     </property>
     <property name="usesScrollButtons">
      <bool>true</bool>
@@ -88,7 +88,7 @@
      <widget class="QCheckBox" name="chkNotifications">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>410</x>
         <y>210</y>
         <width>131</width>
         <height>60</height>
@@ -135,7 +135,7 @@
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>591</width>
+        <width>771</width>
         <height>60</height>
        </rect>
       </property>
@@ -149,66 +149,12 @@
        <string>- When should AutoDisconnect be active?</string>
       </property>
      </widget>
-     <widget class="QRadioButton" name="radioEnabledAlways">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>70</y>
-        <width>101</width>
-        <height>60</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>15</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Always</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="radioEnabledNotCharging">
-      <property name="geometry">
-       <rect>
-        <x>130</x>
-        <y>70</y>
-        <width>401</width>
-        <height>60</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>15</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Only when the phone is not charging</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="radioEnabledNever">
-      <property name="geometry">
-       <rect>
-        <x>550</x>
-        <y>70</y>
-        <width>101</width>
-        <height>60</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>15</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Never</string>
-      </property>
-     </widget>
      <widget class="QLabel" name="label_13">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>410</x>
         <y>150</y>
-        <width>791</width>
+        <width>361</width>
         <height>60</height>
        </rect>
       </property>
@@ -219,7 +165,159 @@
        </font>
       </property>
       <property name="text">
-       <string>- Display notifications about AutoDisconnect activity?</string>
+       <string>- Display activity notifications?</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="enabledList">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>70</y>
+        <width>781</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <property name="frame">
+       <bool>false</bool>
+      </property>
+      <item>
+       <property name="text">
+        <string>   Never</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>   Always</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>   When the device is not charging</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>   When the device is locked</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>   When the device is locked AND not charging</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QComboBox" name="networkModeList">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>210</y>
+        <width>371</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="frame">
+       <bool>false</bool>
+      </property>
+      <item>
+       <property name="text">
+        <string>   Disabled</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>   3G - Switch last 3''</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>   3G - Switch last 4''</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>   3G - Switch last 5''</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>   3G - Switch last 6''</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>   3G - Switch last 7''</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>   Dual - Switch last 4''</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>   Dual - Switch last 5''</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>   Dual - Switch last 6''</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>   Dual - Switch last 7''</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>   Dual - Switch last 8''</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QLabel" name="label_17">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>150</y>
+        <width>371</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>- Auto-Switch 2G / 3G-Dual</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::AutoText</enum>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
@@ -362,71 +460,6 @@
       </property>
       <property name="wordWrap">
        <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_17">
-      <property name="geometry">
-       <rect>
-        <x>440</x>
-        <y>10</y>
-        <width>331</width>
-        <height>60</height>
-       </rect>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <family>Sans Serif</family>
-        <pointsize>15</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>- Network Mode (beta) :</string>
-      </property>
-      <property name="textFormat">
-       <enum>Qt::AutoText</enum>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="chkUse2G">
-      <property name="geometry">
-       <rect>
-        <x>440</x>
-        <y>70</y>
-        <width>351</width>
-        <height>60</height>
-       </rect>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="font">
-       <font>
-        <family>Sans Serif</family>
-        <pointsize>15</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Use 2G when not connected</string>
-      </property>
-      <property name="checked">
-       <bool>false</bool>
       </property>
      </widget>
      <widget class="QCheckBox" name="chkExceptionOpenVPN">
@@ -575,7 +608,7 @@
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>691</width>
+        <width>451</width>
         <height>60</height>
        </rect>
       </property>
@@ -768,19 +801,81 @@
       </property>
       <item>
        <property name="text">
-        <string>  B/min</string>
+        <string>   B/min</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>  KB/min</string>
+        <string>   KB/min</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>  MB/min</string>
+        <string>   MB/min</string>
        </property>
       </item>
+     </widget>
+     <widget class="QSpinBox" name="spinPreIntervalGPRS">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>70</y>
+        <width>260</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="buttonSymbols">
+       <enum>QAbstractSpinBox::PlusMinus</enum>
+      </property>
+      <property name="accelerated">
+       <bool>true</bool>
+      </property>
+      <property name="suffix">
+       <string> seconds</string>
+      </property>
+      <property name="minimum">
+       <number>0</number>
+      </property>
+      <property name="maximum">
+       <number>999</number>
+      </property>
+      <property name="value">
+       <number>30</number>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_23">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>70</y>
+        <width>71</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>after</string>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_5">
@@ -869,17 +964,17 @@
       </property>
       <item>
        <property name="text">
-        <string>  B/min</string>
+        <string>   B/min</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>  KB/min</string>
+        <string>   KB/min</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>  MB/min</string>
+        <string>   MB/min</string>
        </property>
       </item>
      </widget>
@@ -999,6 +1094,68 @@
        <string/>
       </property>
      </widget>
+     <widget class="QLabel" name="label_24">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>70</y>
+        <width>71</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>after</string>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinPreIntervalWLAN">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>70</y>
+        <width>260</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="buttonSymbols">
+       <enum>QAbstractSpinBox::PlusMinus</enum>
+      </property>
+      <property name="accelerated">
+       <bool>true</bool>
+      </property>
+      <property name="suffix">
+       <string> seconds</string>
+      </property>
+      <property name="minimum">
+       <number>0</number>
+      </property>
+      <property name="maximum">
+       <number>999</number>
+      </property>
+      <property name="value">
+       <number>30</number>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_4">
      <attribute name="title">
@@ -1050,49 +1207,6 @@
       </property>
       <property name="checked">
        <bool>false</bool>
-      </property>
-     </widget>
-     <widget class="QSpinBox" name="spinIntervalBluetooth">
-      <property name="geometry">
-       <rect>
-        <x>130</x>
-        <y>210</y>
-        <width>260</width>
-        <height>60</height>
-       </rect>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <family>Sans Serif</family>
-        <pointsize>15</pointsize>
-       </font>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="buttonSymbols">
-       <enum>QAbstractSpinBox::PlusMinus</enum>
-      </property>
-      <property name="accelerated">
-       <bool>true</bool>
-      </property>
-      <property name="suffix">
-       <string> minutes</string>
-      </property>
-      <property name="minimum">
-       <number>10</number>
-      </property>
-      <property name="maximum">
-       <number>180</number>
-      </property>
-      <property name="value">
-       <number>10</number>
       </property>
      </widget>
      <widget class="QLabel" name="label_16">
@@ -1147,6 +1261,49 @@
       </property>
       <property name="text">
        <string/>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinIntervalBluetooth">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>210</y>
+        <width>260</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="buttonSymbols">
+       <enum>QAbstractSpinBox::PlusMinus</enum>
+      </property>
+      <property name="accelerated">
+       <bool>true</bool>
+      </property>
+      <property name="suffix">
+       <string> minutes</string>
+      </property>
+      <property name="minimum">
+       <number>10</number>
+      </property>
+      <property name="maximum">
+       <number>180</number>
+      </property>
+      <property name="value">
+       <number>10</number>
       </property>
      </widget>
     </widget>

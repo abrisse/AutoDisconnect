@@ -1,3 +1,17 @@
+autodisconnect (0.4.5) unstable; urgency=low
+
+  * Enhancement of AutoSwitch [#5861] : 
+    + 3G/Dual option  - Reporter jaguilar
+    + Active only when 3G is on - Special thanks to maddler
+    + Others enhancements
+
+  * Fix [#5918] : The minus button on the SpinBox on the bluetooth tab was defective - Reporter hironico
+
+  * New feature [#5870] : Add an option: "Do not disconnect while using the device" - Reporter c1fs2aom
+  * New feature [#5919] : Add a grace period for each connection
+
+ -- Aymeric Brisse <aymeric.brisse@gmail.com>  Thu, 10 Jun 2010 20:16:34 +0200
+
 autodisconnect (0.4-2) unstable; urgency=low
 
   * Use of PR 1.2 Qt libraries
