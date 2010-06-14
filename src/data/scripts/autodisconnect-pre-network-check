@@ -3,7 +3,7 @@
 #
 # App : AutoDisconnect
 # Url : https://garage.maemo.org/projects/autodisconnect/
-# Version: 0.4.5
+# Version: 0.4.6
 # Author: Aymeric Brisse <aymeric.brisse@gmail.com>
 # License: GNU General Public License
 #
@@ -59,9 +59,9 @@ switch_3G()
         if [[ -z "`dbus-send --type=method_call --print-reply --dest=org.freedesktop.Telepathy.ConnectionManager.ring /org/freedesktop/Telepathy/Connection/ring/tel/ring org.freedesktop.DBus.Properties.Get string:org.freedesktop.Telepathy.Connection.Interface.Requests string:Channels | grep /org/freedesktop/Telepathy/Connection/ring/tel/ring/`" ]]; then
 
             if [[ "$g_idle_network_mode_type" = "3g" ]]; then
-                network_mode_id=2
+                network_mode_id=2 # 3G
             else
-                network_mode_id=0
+                network_mode_id=0 # Dual Mode
             fi
             
             dbus-send --system --type=method_call \
@@ -92,15 +92,11 @@ main()
 
     # Log
     logentry "<pre-if-up-start>"
-
-    #charging_status="`lshal -u '/org/freedesktop/Hal/devices/bme' | grep battery.rechargeable.is_charging | awk '{print $3}'`"
-    #if [[ "$g_running_options" != 2 -o "$charging_status" = false ]]; then
         
-        # Switch network mode to 3G if allowed
-        [[ "$g_idle_network_mode_type" != "none" -a "$interface" = "GPRS" ]] && {
-            switch_3G
-        }
-    #fi 
+    # Switch network mode to 3G if allowed
+    [[ "$g_idle_network_mode_type" != "none" -a "$interface" = "GPRS" ]] && {
+        switch_3G
+    }
 }
 
 # ---------------------------------------------------------------------------
@@ -109,12 +105,8 @@ main()
 
 # Start AutoDisconnect
 
-g_running_options="`gconftool-2 -g /apps/autodisconnect/param_running_options`"
-
-#if [[ "$g_running_options" != 0 ]]; then
-    main
-    logentry "<pre-if-up-stop>"
-#fi
+main
+logentry "<pre-if-up-stop>"
 
 exit 0
 

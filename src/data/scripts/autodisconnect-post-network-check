@@ -3,7 +3,7 @@
 #
 # App : AutoDisconnect
 # Url : https://garage.maemo.org/projects/autodisconnect/
-# Version: 0.4.5
+# Version: 0.4.6
 # Author: Aymeric Brisse <aymeric.brisse@gmail.com>
 # License: GNU General Public License
 #
@@ -20,7 +20,7 @@ readparameters()
     g_logging="true"
 
     # Auto 2G Mode
-    g_use_2g="`gconftool-2 -g /apps/autodisconnect/param_use_2g`"
+    g_idle_network_mode_type="`gconftool-2 -g /apps/autodisconnect/param_idle_network_mode_type`"
 
     # Where to store the logfile. This is cleared when it goes over 50k.
     logfile=/var/log/autodisconnect.log
@@ -57,6 +57,7 @@ switch_2G()
         # Check if any call is active
         if [[ -z "`dbus-send --type=method_call --print-reply --dest=org.freedesktop.Telepathy.ConnectionManager.ring /org/freedesktop/Telepathy/Connection/ring/tel/ring org.freedesktop.DBus.Properties.Get string:org.freedesktop.Telepathy.Connection.Interface.Requests string:Channels | grep /org/freedesktop/Telepathy/Connection/ring/tel/ring/`" ]]; then
 
+            # 2G
             dbus-send --system --type=method_call \
                 --dest=com.nokia.phone.net /com/nokia/phone/net \
                 Phone.Net.set_selected_radio_access_technology byte:1
@@ -82,16 +83,11 @@ main()
 
     # Log
     logentry "<post-down-start>"	    
-
-    #charging_status="`lshal -u '/org/freedesktop/Hal/devices/bme' | grep battery.rechargeable.is_charging | awk '{print $3}'`"
-    #if [[ $g_running_options != 2 -o $charging_status = false ]]; then
         
-        # Switch back network mode to 2G if allowed
-        [[ "$g_idle_network_mode_type" != "none" -a "$interface" = "GPRS" ]] && {
-            switch_2G
-        }
-
-    #fi 
+    # Switch back network mode to 2G if allowed
+    [[ "$g_idle_network_mode_type" != "none" -a "$interface" = "GPRS" ]] && {
+        switch_2G
+    }
 }
 
 # ---------------------------------------------------------------------------
@@ -100,12 +96,8 @@ main()
 
 # Start AutoDisconnect
 
-g_running_options="`gconftool-2 -g /apps/autodisconnect/param_running_options`"
-
-#if [[ "$g_running_options" != 0 ]]; then
-    main
-    logentry "<post-down-stop>"
-#fi
+main
+logentry "<post-down-stop>"
 
 exit 0
 

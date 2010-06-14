@@ -152,7 +152,7 @@ void MainWindow::loadValues()
   /* Version */
   QString version = "AutoDisconnect v" + Utils::GetString("version");
   this->setWindowTitle(version);
-  ui->label_version->setText(version);
+  //ui->label_version->setText(version);
 
   /* General */  
   ui->enabledList->setCurrentIndex(Utils::GetInteger("param_running_options"));
@@ -244,7 +244,7 @@ void MainWindow::loadValues()
 void MainWindow::about()
 {
   QString aboutText = "\nAutoDisconnect is an application which closes your idle connections (Wifi + 3G/GPRS + Bluetooth)";
-  aboutText += " and switches to 2G when 3G is not used, in order for your batteries to last much longer. You can get more information on http://wiki.maemo.org/AutoDisconnect.\n\n";
-  aboutText += "Written by Aymeric Brisse - aymeric.brisse@gmail.com\n";
+  aboutText += " and switches to 2G when 3G is not used, in order for your batteries to last much longer.\n\n";
+  aboutText += "Aymeric Brisse (aymeric.brisse@gmail.com)\n";
   QMessageBox::about(this, "About", aboutText);
 }

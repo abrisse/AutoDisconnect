@@ -1,3 +1,10 @@
+autodisconnect (0.4.6) unstable; urgency=low
+
+  * Fix [#5923] Cannot disable the auto-switch 2G/3G
+  * Enhancement : Add a link to the Wiki
+
+ -- Aymeric Brisse <aymeric.brisse@gmail.com>  Mon, 14 Jun 2010 02:29:01 +0200
+
 autodisconnect (0.4.5) unstable; urgency=low
 
   * Enhancement of AutoSwitch [#5861] : 

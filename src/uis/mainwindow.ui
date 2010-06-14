@@ -240,6 +240,11 @@
       </item>
       <item>
        <property name="text">
+        <string>   3G - Switch last 2''</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>   3G - Switch last 3''</string>
        </property>
       </item>
@@ -256,11 +261,6 @@
       <item>
        <property name="text">
         <string>   3G - Switch last 6''</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>   3G - Switch last 7''</string>
        </property>
       </item>
       <item>
@@ -1313,14 +1313,14 @@
      <rect>
       <x>20</x>
       <y>360</y>
-      <width>281</width>
+      <width>321</width>
       <height>60</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Sans Serif</family>
-      <pointsize>15</pointsize>
+      <pointsize>12</pointsize>
      </font>
     </property>
     <property name="autoFillBackground">
@@ -1330,7 +1330,20 @@
      <string notr="true">color: rgb(88, 88, 88);</string>
     </property>
     <property name="text">
-     <string>AutoDisconnect - v.0.3.1</string>
+     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;table border=&quot;0&quot; style=&quot;-qt-table-type: root; margin-top:4px; margin-bottom:4px; margin-left:4px; margin-right:4px;&quot;&gt;
+&lt;tr&gt;
+&lt;td style=&quot;border: none;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://wiki.maemo.org/AutoDisconnect&quot;&gt;&lt;span style=&quot; font-family:'Sans'; font-size:15pt; font-weight:600; text-decoration: none; color:#dcdcdc;&quot;&gt;[ Click here to access the Wiki ]&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="openExternalLinks">
+     <bool>true</bool>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse</set>
     </property>
    </widget>
    <widget class="QLabel" name="label_10">
