@@ -238,56 +238,6 @@
         <string>   Disabled</string>
        </property>
       </item>
-      <item>
-       <property name="text">
-        <string>   3G - Switch last 2''</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>   3G - Switch last 3''</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>   3G - Switch last 4''</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>   3G - Switch last 5''</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>   3G - Switch last 6''</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>   Dual - Switch last 4''</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>   Dual - Switch last 5''</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>   Dual - Switch last 6''</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>   Dual - Switch last 7''</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>   Dual - Switch last 8''</string>
-       </property>
-      </item>
      </widget>
      <widget class="QLabel" name="label_17">
       <property name="geometry">

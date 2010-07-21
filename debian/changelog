@@ -1,3 +1,12 @@
+autodisconnect (0.4.7) unstable; urgency=low
+
+  * Fix [#6028] Need longer "switch last" durations
+  * Fix [#6070] Add Exception for Pidgin Plugin
+
+  * MinorEnhancement : Notification labels changed
+
+ -- Aymeric Brisse <aymeric.brisse@gmail.com>  Wed, 21 Jul 2010 02:07:52 +0200
+
 autodisconnect (0.4.6) unstable; urgency=low
 
   * Fix [#5923] Cannot disable the auto-switch 2G/3G

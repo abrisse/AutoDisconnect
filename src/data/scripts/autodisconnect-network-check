@@ -3,7 +3,7 @@
 #
 # App : AutoDisconnect
 # Url : https://garage.maemo.org/projects/autodisconnect/
-# Version: 0.4.5
+# Version: 0.4.7
 # Author: Aymeric Brisse <aymeric.brisse@gmail.com>
 # License: GNU General Public License
 #
@@ -52,9 +52,6 @@ read_parameters()
     g_enable=""
     [[ `getvalue "connection_wlan"` = true ]] && g_enable="wlan $g_enable"
     [[ `getvalue "connection_gprs"` = true ]] && g_enable="gprs $g_enable"
-
-    # Auto 2G Mode
-    g_use_2g=`getvalue "use_2g"`
 
     # Where to store the logfile. This is cleared when it goes over 50k.
     logfile=/var/log/autodisconnect.log
@@ -182,8 +179,8 @@ disable_quit()
 {
     connection_check=`echo "$g_enable" | grep "$short_interface" 2>/dev/null`
     
-    if [[ -n "$short_interface" -a -n "$connection_check" ]]; then
-        osnotify "AutoDisconnect is now checking $interface"
+    if [[ -n "$short_interface" -a -n "$connection_check" ]]; then        
+        osnotify "AutoDisconnect is now monitoring your $display_interface connection"
         logentry "interface started"
         false
     else
@@ -222,6 +219,11 @@ main()
     interface="$ICD_CONNECTION_TYPE"
     short_interface="`echo $interface | awk -F"_" '{print tolower($1)}'`"
     network_interface="$short_interface"0
+    if [[ "$short_interface" = "wlan" ]]; then
+        display_interface="Wifi"
+    else
+        display_interface="GPRS"
+    fi
 
     # Init -> Kill other instances & dbus & log
     init
@@ -301,10 +303,10 @@ main()
             exception_apply="voip"
         fi
 
-        # Check if an IM Account is active (XMMP or Skype)
+        # Check if an IM Account is active (XMMP or Skype or Pidgin)
 
         if [[ -z "$exception_apply" -a "$g_exception_im_accounts" = true ]] && \
-        (`isrunning "/usr/lib/telepathy/telepathy-gabble"` || `isrunning "/usr/lib/telepathy/telepathy-spirit"`); then
+        (`isrunning "/usr/lib/telepathy/telepathy-gabble"` || `isrunning "/usr/lib/telepathy/telepathy-spirit"` || `isrunning "/usr/lib/telepathy/telepathy-haze"`); then
             exception_apply="im_account"
         fi
 
@@ -319,7 +321,7 @@ main()
         packets_after="`grep $network_interface /proc/net/dev | awk -F":" '{print $2}' | awk '{print $1}'`"
 
         if [[ "$packets_after" -lt "$((packets_before+g_dontcountbytes))" ]]; then
-            osnotify "AutoDisconnect has closed $interface (inactive)"
+            osnotify "AutoDisconnect has closed your $display_interface connection (inactive)"
             logentry "interface closed (inactive) +$((packets_after-packets_before))"            
             disconnect            
             break

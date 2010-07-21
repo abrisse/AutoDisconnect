@@ -1,5 +1,5 @@
 /*
-@version: 0.4.5
+@version: 0.4.7
 @author: Aymeric Brisse <aymeric.brisse@gmail.com>
 @license: GNU General Public License
 */
@@ -67,23 +67,15 @@ void MainWindow::saveValues()
 
   /* Network */
   QString idle_network_infos = ui->networkModeList->currentText();
-  QString idle_network_type;
-  int idle_network_duration;
+  QString idle_network_type = "none";
+  QRegExp rx("(\\w+) - Switch lasts (\\d+)''$");
+  int idle_network_duration = 0;
 
-  if (idle_network_infos.contains("3G"))
+  if (idle_network_infos.contains(rx))
   {
-    idle_network_type = "3g";
-    idle_network_duration = idle_network_infos.mid(idle_network_infos.length()-3, 1).toInt();
-  }
-  else if (idle_network_infos.contains("Dual"))
-  {
-    idle_network_type = "dual";
-    idle_network_duration = idle_network_infos.mid(idle_network_infos.length()-3, 1).toInt();
-  }
-  else
-  {
-    idle_network_type = "none";
-    idle_network_duration = 0;
+    idle_network_type = rx.capturedTexts().at(1).toLower();
+    idle_network_duration = rx.capturedTexts().at(2).toInt();
+    ui->btnSave->setText(rx.capturedTexts().at(2).toLower());
   }
 
   Utils::SetString("param_idle_network_mode_type", idle_network_type);
@@ -212,17 +204,23 @@ void MainWindow::loadValues()
   QString idle_network_type = Utils::GetString("param_idle_network_mode_type");
   int idle_network_duration = Utils::GetInteger("param_idle_network_mode_duration");
 
+  for(int i=2; i<=10; i++)
+    ui->networkModeList->addItem(QString("   3G - Switch lasts ") + QString::number(i) + "''");
+
+  for(int i=4; i<=14; i++)
+    ui->networkModeList->addItem(QString("   Dual - Switch lasts ") + QString::number(i) + "''");
+
   if (idle_network_type == "none")
   {
     ui->networkModeList->setCurrentIndex(0);
   }
   else if (idle_network_type == "3g")
   {    
-    ui->networkModeList->setCurrentIndex(ui->networkModeList->findText(QString("   3G - Switch last ") + QString::number(idle_network_duration) + "''", Qt::MatchExactly));
+    ui->networkModeList->setCurrentIndex(ui->networkModeList->findText(QString("   3G - Switch lasts ") + QString::number(idle_network_duration) + "''", Qt::MatchExactly));
   }
   else if (idle_network_type == "dual")
   {
-    ui->networkModeList->setCurrentIndex(ui->networkModeList->findText(QString("   Dual - Switch last ") + QString::number(idle_network_duration) + "''", Qt::MatchExactly));
+    ui->networkModeList->setCurrentIndex(ui->networkModeList->findText(QString("   Dual - Switch lasts ") + QString::number(idle_network_duration) + "''", Qt::MatchExactly));
   }
 
   ui->chkConnexionWLAN->setChecked(Utils::GetBoolean("param_connection_wlan"));
